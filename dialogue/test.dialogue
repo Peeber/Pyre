@@ -1,0 +1,17 @@
+~ start
+set State.isTalking = true
+Nathan: [[David|Randal|Pyre|Arthur]], this is some dialogue.
+Nathan: Who is best girl?
+- Node
+	Pyre: Node bunny waifu haha!
+	Nathan: Valid.
+- Red Hood
+	Pyre: I'd go beast mode on Red Hood.
+	Nathan: So would I.
+- Mary Sue
+	Pyre: Mary Sue is the best I love her so much please give me Leaf!
+	Nathan: Kill yourself.
+- Start again => start
+- End the conversation => END
+set State.isTalking = false
+=> END
