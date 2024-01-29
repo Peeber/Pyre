@@ -1,13 +1,19 @@
 extends CharacterBody2D
+class_name Player
 
 @onready var animations = $AnimatedSprite2D
 @onready var facing = $Direction
 @onready var actionable_finder: Area2D = $Direction/ActionableFinder
 @onready var hitbox = $HitboxComponent
+@onready var health = $HealthComponent
 @onready var dashFrames = $DashFrames
 @onready var dashCD = $DashCD
 @export var speed: int = 35
 @export var isDashVariant: bool = false
+@export var current_Health = 100
+@export var max_Health = 100
+@export var health_bar : ProgressBar
+@export var focus = 0
 
 var isWalking = false
 var canDash = true
@@ -65,3 +71,10 @@ func _physics_process(delta):
 	move_and_slide()
 	updateAnimation()
 	
+
+func updateHealth():
+	max_Health = health.MAX_HEALTH
+	current_Health = health.current_Health
+	if current_Health > max_Health:
+		current_Health = max_Health
+	health_bar.update()

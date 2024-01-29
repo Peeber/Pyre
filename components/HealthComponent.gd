@@ -1,14 +1,17 @@
 extends Node2D
 class_name HealthComponent
 
-@export var MAX_HEALTH := 100.0
-var health : float
+@export var MAX_HEALTH = 100.0
+@export var current_Health : float
 
 func _ready():
-	health = MAX_HEALTH
+	current_Health = MAX_HEALTH
 
 func damage(attack: Attack):
-	health -= attack.attack_damage
+	current_Health -= attack.attack_damage
 	
-	if health <= 0:
+	if current_Health <= 0:
 		get_parent().queue_free()
+
+func changeMaxHealth(adjustment):
+	MAX_HEALTH += adjustment
