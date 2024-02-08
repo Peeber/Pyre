@@ -1,5 +1,5 @@
 ~ start
-set State.isTalking = true
+do SignalBus.dialogueBegan.emit()
 Nathan: [[David|Randal|Pyre|Arthur]], this is some dialogue.
 Nathan: Who is best girl?
 - Node
@@ -11,7 +11,10 @@ Nathan: Who is best girl?
 - Mary Sue
 	Pyre: Mary Sue obviously!
 	Nathan: Die.
+	do SignalBus.healthChanged.emit("Player",50,false)
 - Start again => start
-- End the conversation => END
-set State.isTalking = false
+- End the conversation 
+	do SignalBus.dialogueEnded.emit()
+	=> END
+do SignalBus.dialogueEnded.emit()
 => END
