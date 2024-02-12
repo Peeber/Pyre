@@ -948,6 +948,7 @@ layer_3/tile_data = PackedInt32Array(327692, 524289, 0, 65545, 524289, 0, 196613
 
 [node name="Sprite2D" type="Sprite2D" parent="TileMap"]
 position = Vector2(259.4, 154.8)
+scale = Vector2(5, 5)
 texture = ExtResource("6_sp63c")
 hframes = 4
 vframes = 2

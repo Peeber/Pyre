@@ -7,7 +7,7 @@ func _ready():
 		SignalBus.healthChanged.connect(update)
 
 func update(target,new_value,isMax):
-	if target == "Player" or target.get_Name() == "Player":
+	if target is Player:
 		if isMax:
 			max_value = new_value
 		else:
