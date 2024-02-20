@@ -928,7 +928,6 @@ bone_angle = 42.044
 
 [node name="leg_right" type="Bone2D" parent="Skeleton2D/pelvis"]
 position = Vector2(-13, -6)
-scale = Vector2(1, 1)
 rest = Transform2D(1, 0, 0, 1, -13, -6)
 
 [node name="foot_right" type="Bone2D" parent="Skeleton2D/pelvis/leg_right"]
@@ -937,7 +936,6 @@ rest = Transform2D(1, 0, 0, 1, 0, 36)
 
 [node name="leg_left" type="Bone2D" parent="Skeleton2D/pelvis"]
 position = Vector2(12, -5)
-scale = Vector2(1, 1)
 rest = Transform2D(1, 0, 0, 1, 12, -5)
 
 [node name="foot_left" type="Bone2D" parent="Skeleton2D/pelvis/leg_left"]

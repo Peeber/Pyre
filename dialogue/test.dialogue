@@ -5,16 +5,26 @@ Nathan: Who is best girl?
 - Node
 	Pyre: Node funny rabbit!
 	Nathan: Valid.
+	=> advance
 - Red Hood
 	Pyre: Red Hood.
 	Nathan: Correct.
+	=> advance
 - Mary Sue
 	Pyre: Mary Sue obviously!
 	Nathan: Die.
 	do SignalBus.healthChanged.emit("Player",50,false)
+	=> advance
 - Start again => start
 - End the conversation 
 	do SignalBus.dialogueEnded.emit()
 	=> END
+do SignalBus.dialogueEnded.emit()
+=> END
+
+~ advance
+Nathan: Now listen here, don't you go through that dang daggone doggone portalroni right there or ya'll get yaself youghted ye wee raspscallion!
+Pyre: Couldn't give a sus matey.
+Pyre: Got the brick.
 do SignalBus.dialogueEnded.emit()
 => END
