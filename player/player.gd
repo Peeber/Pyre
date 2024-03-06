@@ -8,17 +8,18 @@ class_name Player
 @onready var health = $HealthComponent
 @onready var dashFrames = $DashFrames
 @onready var dashCD = $DashCD
+@onready var focusTimer = $FocusTimer
 @export var speed: int = 35
 @export var isDashVariant: bool = false
 @export var focus = 0
-@export var focusTick: int = (5/3)
+@export var focusTick: int = (5/3.0)
 @export var direction = "Right"
+@export var embers = 1
 
 var isWalking = false
 var canDash = true
 var isDashing = false
 var isTalking = false
-
 
 func _ready():
 	if !SignalBus.is_connected("dialogueBegan",dialogueStart):
@@ -27,8 +28,12 @@ func _ready():
 		SignalBus.dialogueEnded.connect(dialogueEnd)
 	if !SignalBus.is_connected("teleportedTo",teleportTo):
 		SignalBus.teleportedTo.connect(teleportTo)
+	if !SignalBus.is_connected("arenaModeSet",handleArenaMode):
+		SignalBus.arenaModeSet.connect(handleArenaMode)
+	State.currentPlayer = self
 
 func handleInput():
+	if State.paused: return
 	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
 		velocity = moveDirection*speed
@@ -56,6 +61,7 @@ func updateAnimation():
 				
 
 func _unhandled_input(_event: InputEvent) -> void:
+	if State.paused: return
 	if Input.is_action_just_pressed("ui_accept"):
 		var actionables = actionable_finder.get_overlapping_areas()
 		if actionables.size() > 0:
@@ -63,6 +69,29 @@ func _unhandled_input(_event: InputEvent) -> void:
 			return
 	elif Input.is_action_just_pressed("dash") and isWalking == true and canDash == true:
 		if isDashVariant == false:
+			baseDash()
+	elif Input.is_action_just_pressed("ember") and State.abilitiesAllowed == true:
+		activateAbility()
+
+func activateAbility():
+	if State.arenaMode and focus < 100:
+		if embers > 0:
+			embers -= 1
+		else:
+			return
+	SignalBus.openedAbilityMenu.emit()
+	
+
+func handleArenaMode(is_active):
+	if is_active:
+		focusTimer.start()
+		print("focus started")
+	else:
+		focusTimer.stop()
+		print("focus stopped")
+
+func baseDash():
+	if isDashVariant == false:
 			canDash = false
 			isDashing = true
 			velocity = velocity * 2
@@ -74,7 +103,6 @@ func _unhandled_input(_event: InputEvent) -> void:
 			dashCD.start()
 			await dashCD.timeout
 			canDash = true
-			
 
 func dialogueStart():
 	isTalking = true
@@ -88,6 +116,7 @@ func dialogueEnd():
 
 func teleportTo(new_position):
 	global_position = new_position
+	print("player is now at " + str(global_position))
 	
 
 func _physics_process(delta):
@@ -96,3 +125,17 @@ func _physics_process(delta):
 	updateAnimation()
 	
 
+func _on_focus_timer_timeout():
+	if focus == 100:
+		print("focus full")
+		return
+	elif focus + focusTick > 100:
+		focus = 100
+		print("focus filled")
+	else:
+		focus += focusTick
+		print("focus increased")
+	print("focus changed")
+	SignalBus.focusChanged.emit(focus)
+	
+	

@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="InvItem" load_steps=2 format=3 uid="uid://85mh8uvo82b8"]
+[gd_resource type="Resource" script_class="Ability" load_steps=2 format=3 uid="uid://85mh8uvo82b8"]
 
 [ext_resource type="Script" path="res://abilities/ability.gd" id="1_tcpfe"]
 
 [resource]
 script = ExtResource("1_tcpfe")
-name = "Spark"
+ability_name = ""
 description = "Toss a living Spark that bounces off walls. If it detects another Spark, they will be linked by a beam of searing flame."
+isScene = false
 cost = 100

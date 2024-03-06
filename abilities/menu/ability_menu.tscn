@@ -1,0 +1,68 @@
+[gd_scene load_steps=3 format=3 uid="uid://c6acrivxt18wn"]
+
+[ext_resource type="Script" path="res://abilities/code/Ability Menu.gd" id="1_dgyoa"]
+[ext_resource type="Texture2D" uid="uid://ge3p6p3rpg0j" path="res://art/GUI/frame_template.png" id="1_rmt7y"]
+
+[node name="Ability Menu" type="NinePatchRect"]
+process_mode = 3
+layout_direction = 2
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -862.0
+offset_top = -174.0
+offset_right = 865.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("1_rmt7y")
+region_rect = Rect2(4, 0, 72, 80)
+script = ExtResource("1_dgyoa")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.501
+anchor_top = 0.946
+anchor_right = 0.501
+anchor_bottom = 0.946
+offset_left = -743.227
+offset_top = -149.55
+offset_right = 1056.77
+offset_bottom = 133.45
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(0.825418, 0.527454)
+follow_focus = true
+vertical_scroll_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer"]
+custom_minimum_size = Vector2(1800, 275)
+layout_direction = 2
+layout_mode = 2
+
+[node name="Description" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.506
+anchor_right = 0.506
+offset_left = -622.862
+offset_top = -291.0
+offset_right = 624.138
+offset_bottom = -6.0
+bbcode_enabled = true
+text = "[font_size=30][center]Haberdasher[/center][/font_size]"
+fit_content = true
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -98.0
+offset_top = -906.0
+offset_right = 1821.0
+offset_bottom = 175.0
+color = Color(0, 0, 0, 0.105882)
+
+[node name="ToggleDebounce" type="Timer" parent="."]
+one_shot = true

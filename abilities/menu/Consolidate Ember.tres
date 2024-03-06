@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=3 format=3 uid="uid://wq2o2e321l1x"]
+
+[ext_resource type="Script" path="res://abilities/ability.gd" id="1_5sahg"]
+[ext_resource type="Texture2D" uid="uid://ge3p6p3rpg0j" path="res://art/GUI/frame_template.png" id="2_rksf7"]
+
+[resource]
+script = ExtResource("1_5sahg")
+ability_name = "Consolidate Ember"
+texture = ExtResource("2_rksf7")
+description = "Condense your stored Focus into an Ember.\\nEmbers can be used to execute an ability on command during combat."
+cost = 100

@@ -1,10 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://hmkgg4684p2i"]
+[gd_scene load_steps=11 format=3 uid="uid://hmkgg4684p2i"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="1_lcpo6"]
-[ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/snow_tiles.png" id="2_7cwqg"]
-[ext_resource type="Texture2D" uid="uid://dweorc7u2fr8l" path="res://art/ice_tiles.png" id="3_ju25k"]
+[ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/Tilesets/snow_tiles.png" id="2_7cwqg"]
+[ext_resource type="Texture2D" uid="uid://dweorc7u2fr8l" path="res://art/Tilesets/ice_tiles.png" id="3_ju25k"]
 [ext_resource type="PackedScene" uid="uid://crmdboi4oi8f5" path="res://scenes/door.tscn" id="4_dkuxr"]
-[ext_resource type="PackedScene" uid="uid://7amcl7lnewu6" path="res://player/player.tscn" id="4_f3g7f"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_yuoe5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2odmn"]
 texture = ExtResource("2_7cwqg")
@@ -904,7 +904,14 @@ sources/0 = SubResource("TileSetAtlasSource_2odmn")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l7n5h"]
 size = Vector2(64, 61)
 
+[sub_resource type="Resource" id="Resource_uc55g"]
+script = ExtResource("6_yuoe5")
+duration = 0.0
+transition = 0
+ease = 2
+
 [node name="test_world_2" type="Node2D"]
+process_mode = 1
 
 [node name="TileMap" type="TileMap" parent="."]
 y_sort_enabled = true
@@ -922,17 +929,17 @@ layer_3/y_sort_enabled = true
 layer_3/z_index = 1
 layer_3/tile_data = PackedInt32Array(327692, 524289, 0, 65545, 524289, 0, 196613, 524289, 0, 262154, 655361, 0, 393221, 655361, 0, 524301, 655361, 0, 393218, 262145, 5, 1114134, 655361, 0, 917518, 655361, 0, 262168, 655361, 0, 917505, 655361, 0, 589843, 524289, 0, 196628, 524289, 0, 851992, 524289, 0, 786436, 524289, 0, 1114112, 524289, 0, 917523, 524289, 0, 1179664, 262145, 5, 1114118, 262145, 5)
 
-[node name="Door" parent="TileMap" node_paths=PackedStringArray("currentWorld") instance=ExtResource("4_dkuxr")]
+[node name="Door" parent="TileMap" node_paths=PackedStringArray("currentWorld", "exit") instance=ExtResource("4_dkuxr")]
 position = Vector2(2682, 2121.5)
 currentWorld = NodePath("../..")
 nextWorldName = "test_world"
+exit = NodePath("Marker2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TileMap/Door"]
 shape = SubResource("RectangleShape2D_l7n5h")
 
-[node name="Player" parent="TileMap" instance=ExtResource("4_f3g7f")]
-position = Vector2(123, 71)
-speed = 500
+[node name="Marker2D" type="Marker2D" parent="TileMap/Door"]
+position = Vector2(3, 234.5)
 
 [node name="PhantomCamera2D" type="Node2D" parent="."]
 position = Vector2(960, 540)
@@ -941,7 +948,7 @@ priority_override = false
 priority = 0
 zoom = Vector2(1, 1)
 follow_mode = 1
-follow_target = NodePath("../TileMap/Player")
+follow_target = NodePath("")
 follow_parameters/damping = false
 frame_preview = true
 pixel_perfect = false
@@ -949,6 +956,6 @@ limit/draw_limits = false
 limit/limit_node_target = NodePath("../TileMap")
 limit/margin = Vector4i(0, 0, 0, 0)
 limit/smoothed = false
-tween_parameters = null
+tween_parameters = SubResource("Resource_uc55g")
 tween_on_load = false
 inactive_update_mode = 0

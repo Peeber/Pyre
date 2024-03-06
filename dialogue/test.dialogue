@@ -1,19 +1,20 @@
 ~ start
 do SignalBus.dialogueBegan.emit()
 Nathan: [[David|Randal|Pyre|Arthur]], this is some dialogue.
-Nathan: Who is best girl?
-- Node
-	Pyre: Node funny rabbit!
-	Nathan: Valid.
+Nathan: Beef or chicken?
+- Rabbit
+	Pyre: Rabbit!
+	Nathan: Wh-why???.
 	=> advance
-- Red Hood
-	Pyre: Red Hood.
+- Beef
+	Pyre: Beef is best.
 	Nathan: Correct.
 	=> advance
-- Mary Sue
-	Pyre: Mary Sue obviously!
-	Nathan: Die.
+- Chicken
+	Pyre: Chicken is nice.
+	Nathan: FALL.
 	do SignalBus.healthChanged.emit("Player",50,false)
+	do State.toggleArenaMode(true)
 	=> advance
 - Start again => start
 - End the conversation 

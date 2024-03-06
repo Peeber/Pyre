@@ -1,16 +1,23 @@
-[gd_scene load_steps=14 format=3 uid="uid://db8owlwg03pw8"]
+[gd_scene load_steps=16 format=3 uid="uid://db8owlwg03pw8"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="1_38u4o"]
-[ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/snow_tiles.png" id="2_3jkfa"]
-[ext_resource type="Texture2D" uid="uid://dweorc7u2fr8l" path="res://art/ice_tiles.png" id="3_1vwqw"]
-[ext_resource type="Texture2D" uid="uid://c2lkq6nluev8g" path="res://art/testnpc.png" id="4_ubx35"]
+[ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/Tilesets/snow_tiles.png" id="2_2itp7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_kfqrj"]
+[ext_resource type="Texture2D" uid="uid://dweorc7u2fr8l" path="res://art/Tilesets/ice_tiles.png" id="3_ug7vw"]
+[ext_resource type="Texture2D" uid="uid://c2lkq6nluev8g" path="res://art/NPCs/testnpc.png" id="4_ekpcb"]
 [ext_resource type="PackedScene" uid="uid://cvjfs3rm3jagq" path="res://components/actionable.tscn" id="5_1e7sc"]
 [ext_resource type="Resource" uid="uid://du80ybulvhlc" path="res://dialogue/test.dialogue" id="6_ew6e8"]
 [ext_resource type="PackedScene" uid="uid://7amcl7lnewu6" path="res://player/player.tscn" id="7_4ac50"]
 [ext_resource type="PackedScene" uid="uid://crmdboi4oi8f5" path="res://scenes/door.tscn" id="9_50ino"]
 
+[sub_resource type="Resource" id="Resource_h0hm3"]
+script = ExtResource("2_kfqrj")
+duration = 0.0
+transition = 0
+ease = 2
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2odmn"]
-texture = ExtResource("2_3jkfa")
+texture = ExtResource("2_2itp7")
 texture_region_size = Vector2i(80, 80)
 0:0/0 = 0
 0:0/0/terrain_set = 0
@@ -440,7 +447,7 @@ texture_region_size = Vector2i(80, 80)
 7:7/0/physics_layer_0/angular_velocity = 0.0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yail7"]
-texture = ExtResource("3_1vwqw")
+texture = ExtResource("3_ug7vw")
 texture_region_size = Vector2i(80, 80)
 0:0/0 = 0
 0:0/0/terrain_set = 0
@@ -911,6 +918,7 @@ size = Vector2(16, 15)
 size = Vector2(64, 61)
 
 [node name="test_world" type="Node2D"]
+process_mode = 1
 
 [node name="PhantomCamera2D" type="Node2D" parent="."]
 position = Vector2(960, 540)
@@ -927,7 +935,7 @@ limit/draw_limits = false
 limit/limit_node_target = NodePath("../TileMap")
 limit/margin = Vector4i(0, 0, 0, 0)
 limit/smoothed = false
-tween_parameters = null
+tween_parameters = SubResource("Resource_h0hm3")
 tween_on_load = false
 inactive_update_mode = 0
 
@@ -950,7 +958,7 @@ layer_3/tile_data = PackedInt32Array(327692, 524289, 0, 65545, 524289, 0, 196613
 [node name="Sprite2D" type="Sprite2D" parent="TileMap"]
 position = Vector2(259.4, 154.8)
 scale = Vector2(5, 5)
-texture = ExtResource("4_ubx35")
+texture = ExtResource("4_ekpcb")
 hframes = 4
 vframes = 2
 
@@ -965,10 +973,14 @@ shape = SubResource("RectangleShape2D_cfbry")
 position = Vector2(123, 71)
 speed = 500
 
-[node name="Door" parent="TileMap" node_paths=PackedStringArray("currentWorld") instance=ExtResource("9_50ino")]
+[node name="Door" parent="TileMap" node_paths=PackedStringArray("currentWorld", "exit") instance=ExtResource("9_50ino")]
 currentWorld = NodePath("../..")
 nextWorldName = "test_world_2"
+exit = NodePath("Marker2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TileMap/Door"]
 position = Vector2(840, 198)
 shape = SubResource("RectangleShape2D_bsapl")
+
+[node name="Marker2D" type="Marker2D" parent="TileMap/Door"]
+position = Vector2(597, 193)

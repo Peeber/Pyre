@@ -4,6 +4,7 @@ class_name Door
 @export var currentWorld : Node2D
 @export var nextWorldName : String
 @export var isLocked : bool
+@export var exit : Marker2D
 
 func _on_body_entered(body):
 	print("detected " + body.name)
