@@ -7,6 +7,7 @@ extends Control
 var cantToggle = false
 var selectedSlot : int = 0
 var selectedIcon : AbilityIcon
+var isOpen = false
 signal menuRefreshed
 
 #bind all signals, make sure gui is closed
@@ -26,18 +27,37 @@ func _ready():
 
 func _unhandled_input(_event: InputEvent) -> void:
 	if !State.paused: return
+	print("game is indeed paused ")
+	if isOpen and visible == false:
+		visible = true
 	if Input.is_action_just_pressed("ember") and State.scriptedAbility == false and cantToggle == false:
 		SignalBus.closedAbilityMenu.emit()
-	elif Input.is_action_just_pressed("ui_right"):
-		if !selectedIcon:
-			return
-		selectedIcon.offSelect()
+	elif Input.is_action_just_pressed("ui_right") and isOpen:
 		var slots = menu.get_children().size()
+		if not selectedIcon:
+			selectedSlot = 0
+			selectedIcon = menu.get_child(selectedSlot)
+		print("ui right pressed")
+		selectedIcon.offSelect()
 		if selectedSlot >= slots-1:
 			selectedSlot = 0
 		else:
 			selectedSlot += 1
 		selectedIcon = menu.get_child(selectedSlot)
+		print("slot " + str(selectedSlot) + " selected")
+		selectedIcon.onSelect()
+	elif Input.is_action_just_pressed("ui_left") and isOpen:
+		var slots = menu.get_children().size()
+		if not selectedIcon:
+			selectedSlot = slots-1
+			selectedIcon = menu.get_child(selectedSlot)
+		selectedIcon.offSelect()
+		if selectedSlot == 0:
+			selectedSlot = slots-1
+		else:
+			selectedSlot -=1
+		selectedIcon = menu.get_child(selectedSlot)
+		print("slot " + str(selectedSlot) + " selected")
 		selectedIcon.onSelect()
 		
 
@@ -45,6 +65,7 @@ func add_ability(ability_name: String):
 	var ability: Ability = load("res://abilities/menu/" + ability_name + ".tres")
 	if ability:
 		items.append(ability)
+		print("added " + ability_name)
 	else:
 		print("cannot find ability " + ability_name)
 	refresh()
@@ -94,7 +115,7 @@ func refresh():
 		#	icon.focus_neighbor_left = lastIcon.get_path()
 		#	lastIcon.focus_neighbor_right = icon.get_path()
 		#lastIcon = icon
-	return true
+	menuRefreshed.emit()
 		
 
 func runDebounce():
@@ -104,17 +125,17 @@ func runDebounce():
 	cantToggle = false
 
 func close():
+	isOpen = false
 	runDebounce()
 	visible = false
 	State.unpause()
 
 func open():
+	isOpen = true
 	runDebounce()
 	State.pause()
-	var refreshed = refresh()
-	if not refreshed:
-		State.unpause()
-		return
+	refresh()
+	await menuRefreshed
 	visible = true
 	selectedSlot = 0
 	selectedIcon = menu.get_child(0)

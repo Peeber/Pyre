@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_tcpfe")
-ability_name = ""
+ability_name = "Spark"
 description = "Toss a living Spark that bounces off walls. If it detects another Spark, they will be linked by a beam of searing flame."
-isScene = false
+isScene = true
 cost = 100

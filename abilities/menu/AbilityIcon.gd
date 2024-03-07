@@ -5,7 +5,9 @@ class_name AbilityIcon
 @onready var tex = $TextureRect
 @export var ability : Ability
 
-var base_color = 0.8313725490196078
+var on_color = Color.hex(0xd4d4d4)
+var off_color = Color.hex(0xd4d4d400)
+
 var base_size = 240
 
 func set_sprite(texture : CompressedTexture2D):
@@ -14,10 +16,10 @@ func set_sprite(texture : CompressedTexture2D):
 	tex.texture = texture
 
 func onSelect():
-	mark.color.a = 1
+	mark.color = on_color
 	print("made mark visible")
 
 
 func offSelect():
-	mark.color.a = 0
+	mark.color = off_color
 	print("goodbye mark")
