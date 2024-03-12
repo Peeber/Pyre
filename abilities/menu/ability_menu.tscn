@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://abilities/code/Ability Menu.gd" id="1_dgyoa"]
 [ext_resource type="Texture2D" uid="uid://ge3p6p3rpg0j" path="res://art/GUI/frame_template.png" id="1_rmt7y"]
 
-[node name="Ability Menu" type="NinePatchRect"]
+[node name="AbilityMenu" type="NinePatchRect"]
 process_mode = 3
 layout_direction = 2
 anchors_preset = 7

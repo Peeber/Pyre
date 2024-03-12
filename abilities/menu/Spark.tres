@@ -6,5 +6,5 @@
 script = ExtResource("1_tcpfe")
 ability_name = "Spark"
 description = "Toss a living Spark that bounces off walls. If it detects another Spark, they will be linked by a beam of searing flame."
-isScene = true
+aim_type = "Reticle"
 cost = 100

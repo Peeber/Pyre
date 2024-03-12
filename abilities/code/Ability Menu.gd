@@ -8,7 +8,40 @@ var cantToggle = false
 var selectedSlot : int = 0
 var selectedIcon : AbilityIcon
 var isOpen = false
+var isAiming = false
+var freeCast = false
 signal menuRefreshed
+signal aimEnd
+
+var reticleAim = func():
+	isAiming = true
+	var player = State.currentPlayer
+	var reticle = load("res://abilities/aiming/reticle.tscn").instantiate()
+	player.get_parent().add_child(reticle)
+	reticle.global_position = player.global_position
+	reticle.active = true
+	await aimEnd
+	reticle.active = false
+	var pos = reticle.global_position
+	reticle.queue_free()
+	return pos
+	
+
+var lineAim = func():
+	pass
+	
+var coneAim = func():
+	pass
+
+var noAim = func():
+	return State.currentPlayer.global_position
+
+var aimDict = {
+	"Reticle" : reticleAim,
+	"Line" : lineAim,
+	"Cone" : coneAim,
+	"None" : noAim,
+}
 
 #bind all signals, make sure gui is closed
 func _ready():
@@ -25,19 +58,28 @@ func _ready():
 		SignalBus.closedAbilityMenu.connect(close)
 	refresh()
 
+func aim(ability: Ability):
+	var aim_function = aimDict[ability.aim_type]
+	isAiming = true
+	var target = await aim_function.call()
+	isAiming = false
+	print(ability.ability_name,target)
+	SignalBus.abilityCast.emit(ability,target)
+	$ColorRect.visible = false
+	close()
+	
+
 func _unhandled_input(_event: InputEvent) -> void:
 	if !State.paused: return
-	print("game is indeed paused ")
 	if isOpen and visible == false:
 		visible = true
-	if Input.is_action_just_pressed("ember") and State.scriptedAbility == false and cantToggle == false:
+	if Input.is_action_just_pressed("ember") and State.scriptedAbility == false and cantToggle == false and isAiming == false:
 		SignalBus.closedAbilityMenu.emit()
 	elif Input.is_action_just_pressed("ui_right") and isOpen:
 		var slots = menu.get_children().size()
 		if not selectedIcon:
 			selectedSlot = 0
 			selectedIcon = menu.get_child(selectedSlot)
-		print("ui right pressed")
 		selectedIcon.offSelect()
 		if selectedSlot >= slots-1:
 			selectedSlot = 0
@@ -55,10 +97,25 @@ func _unhandled_input(_event: InputEvent) -> void:
 		if selectedSlot == 0:
 			selectedSlot = slots-1
 		else:
-			selectedSlot -=1
+			selectedSlot -= 1
 		selectedIcon = menu.get_child(selectedSlot)
 		print("slot " + str(selectedSlot) + " selected")
 		selectedIcon.onSelect()
+	elif Input.is_action_just_pressed("ui_accept"):
+		print("z pressed")
+		if selectedIcon:
+			if isAiming == false and isOpen == true:
+				isOpen = false
+				$ColorRect.visible = true
+				visible = false
+				if State.currentPlayer.focus == 100:
+					State.currentPlayer.focus = 0
+					freeCast = true
+				aim(selectedIcon.ability)
+			elif isAiming == true and isOpen == false:
+				aimEnd.emit()
+				print("aim ended")
+		
 		
 
 func add_ability(ability_name: String):
@@ -129,6 +186,7 @@ func close():
 	runDebounce()
 	visible = false
 	State.unpause()
+	freeCast = false
 
 func open():
 	isOpen = true

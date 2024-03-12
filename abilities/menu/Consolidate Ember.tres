@@ -8,4 +8,5 @@ script = ExtResource("1_5sahg")
 ability_name = "Consolidate Ember"
 texture = ExtResource("2_rksf7")
 description = "Condense your stored Focus into an Ember.\\nEmbers can be used to execute an ability on command during combat."
+aim_type = "None"
 cost = 100
