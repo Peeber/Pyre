@@ -5,10 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="4_5li15"]
 [ext_resource type="Texture2D" uid="uid://hy6jbqkw4lgd" path="res://art/Player/Pyre.png" id="4_twik1"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w28qk"]
-radius = 7.0
-height = 24.0
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cmveg"]
 size = Vector2(14, 7.6)
 
@@ -749,27 +745,22 @@ _data = {
 "run": SubResource("Animation_tbemq")
 }
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w28qk"]
+radius = 7.0
+height = 24.0
+
 [node name="Player" type="CharacterBody2D"]
 process_mode = 1
 z_index = 1
 y_sort_enabled = true
 texture_filter = 1
+collision_layer = 16
+collision_mask = 9
 script = ExtResource("1_gge78")
-speed = 75
 
 [node name="HealthComponent" parent="." instance=ExtResource("3_pv2sa")]
 MAX_HEALTH = 100.0
 current_Health = 10.0
-
-[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("4_5li15")]
-scale = Vector2(5, 5)
-collision_layer = 2
-collision_mask = 2
-health_component = NodePath("../HealthComponent")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
-position = Vector2(6.31089e-30, -2.2)
-shape = SubResource("CapsuleShape2D_w28qk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 30)
@@ -953,5 +944,12 @@ bone_angle = 0.0
 libraries = {
 "": SubResource("AnimationLibrary_1w032")
 }
+
+[node name="HitboxComponent" parent="." instance=ExtResource("4_5li15")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+position = Vector2(3.15545e-29, -11)
+scale = Vector2(5, 5)
+shape = SubResource("CapsuleShape2D_w28qk")
 
 [connection signal="timeout" from="FocusTimer" to="." method="_on_focus_timer_timeout"]

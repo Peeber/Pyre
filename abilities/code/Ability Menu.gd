@@ -64,7 +64,10 @@ func aim(ability: Ability):
 	var target = await aim_function.call()
 	isAiming = false
 	print(ability.ability_name,target)
-	SignalBus.abilityCast.emit(ability,target)
+	if ability.scene:
+		var new_scene = ability.scene.instantiate()
+		State.currentPlayer.get_parent().add_child(new_scene)
+	SignalBus.abilityCast.emit(State.currentPlayer,ability,target)
 	$ColorRect.visible = false
 	close()
 	
@@ -103,7 +106,8 @@ func _unhandled_input(_event: InputEvent) -> void:
 		selectedIcon.onSelect()
 	elif Input.is_action_just_pressed("ui_accept"):
 		print("z pressed")
-		if selectedIcon:
+		if selectedSlot:
+			selectedIcon = menu.get_child(selectedSlot)
 			if isAiming == false and isOpen == true:
 				isOpen = false
 				$ColorRect.visible = true
@@ -182,6 +186,11 @@ func runDebounce():
 	cantToggle = false
 
 func close():
+	if freeCast:
+		State.currentPlayer.focus = 100
+	elif State.arenaMode == true:
+		State.currentPlayer.embers += 1
+		SignalBus.emberChanged.emit(State.currentPlayer.embers)
 	isOpen = false
 	runDebounce()
 	visible = false
@@ -198,6 +207,6 @@ func open():
 	selectedSlot = 0
 	selectedIcon = menu.get_child(0)
 	selectedIcon.onSelect()
-	print(selectedIcon.name + "selected")
+	print(selectedIcon.ability.ability_name)
 	
 

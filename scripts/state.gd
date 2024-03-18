@@ -8,6 +8,9 @@ var arenaMode : bool = false
 var abilitiesAllowed : bool = true
 var paused : bool = false
 var scriptedAbility : bool = false
+var emberMax : int = 1
+var sparkMax : int = 3
+var sparks = []
 
 func toggleFocusPaused():
 	focusPaused = !focusPaused
@@ -29,3 +32,10 @@ func pause():
 func unpause():
 	get_tree().paused = false
 	paused = false
+
+func sparkAdded(spark : Spark):
+	sparks.append(spark)
+	if sparks.size() > sparkMax:
+		var old = sparks[0]
+		sparks.remove_at(0)
+		old.queue_free()

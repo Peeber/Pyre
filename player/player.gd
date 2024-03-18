@@ -9,7 +9,7 @@ class_name Player
 @onready var dashFrames = $DashFrames
 @onready var dashCD = $DashCD
 @onready var focusTimer = $FocusTimer
-@export var speed: int = 35
+@export var speed: int = 75
 @export var isDashVariant: bool = false
 @export var focus = 0
 @export var focusTick: int = (5/3.0)
@@ -30,6 +30,8 @@ func _ready():
 		SignalBus.teleportedTo.connect(teleportTo)
 	if !SignalBus.is_connected("arenaModeSet",handleArenaMode):
 		SignalBus.arenaModeSet.connect(handleArenaMode)
+	if !SignalBus.is_connected("abilityCast",consolidateEmber):
+		SignalBus.abilityCast.connect(consolidateEmber)
 	State.currentPlayer = self
 
 func handleInput():
@@ -77,6 +79,7 @@ func activateAbility():
 	if State.arenaMode and focus < 100:
 		if embers > 0:
 			embers -= 1
+			SignalBus.emberChanged.emit(embers)
 		else:
 			return
 	SignalBus.openedAbilityMenu.emit()
@@ -138,4 +141,8 @@ func _on_focus_timer_timeout():
 	print("focus changed")
 	SignalBus.focusChanged.emit(focus)
 	
-	
+func consolidateEmber(caster,ability, target):
+	if ability.ability_name == "Consolidate Ember" and target is Player:
+		if embers < State.emberMax:
+			embers += 1
+			SignalBus.emberChanged.emit(embers)

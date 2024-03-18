@@ -1,10 +1,14 @@
-[gd_resource type="Resource" script_class="Ability" load_steps=2 format=3 uid="uid://85mh8uvo82b8"]
+[gd_resource type="Resource" script_class="Ability" load_steps=4 format=3 uid="uid://85mh8uvo82b8"]
 
+[ext_resource type="PackedScene" uid="uid://7lhw0ql55qou" path="res://abilities/code/spark.tscn" id="1_smifx"]
 [ext_resource type="Script" path="res://abilities/ability.gd" id="1_tcpfe"]
+[ext_resource type="Texture2D" uid="uid://dbmd050rvf2i8" path="res://art/GUI/small_spark.png" id="2_st22u"]
 
 [resource]
 script = ExtResource("1_tcpfe")
 ability_name = "Spark"
+texture = ExtResource("2_st22u")
 description = "Toss a living Spark that bounces off walls. If it detects another Spark, they will be linked by a beam of searing flame."
 aim_type = "Reticle"
 cost = 100
+scene = ExtResource("1_smifx")
