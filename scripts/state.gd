@@ -1,4 +1,3 @@
 extends Node
 
-
-var isTalking: bool = false
+#insert global state variables here

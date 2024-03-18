@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxkkbh74ejm0d"
-path="res://.godot/imported/TilesetNature.png-d8a648a2fafb8d61d10fe0b21e1b96c7.ctex"
+uid="uid://dweorc7u2fr8l"
+path="res://.godot/imported/ice_tiles.png-8c75811018fe73cf20105a6b15d146be.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/TilesetNature.png"
-dest_files=["res://.godot/imported/TilesetNature.png-d8a648a2fafb8d61d10fe0b21e1b96c7.ctex"]
+source_file="res://art/ice_tiles.png"
+dest_files=["res://.godot/imported/ice_tiles.png-8c75811018fe73cf20105a6b15d146be.ctex"]
 
 [params]
 

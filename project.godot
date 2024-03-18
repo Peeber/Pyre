@@ -21,6 +21,7 @@ SoundManager="*res://addons/sound_manager/sound_manager.gd"
 Spawning="*res://addons/BulletUpHell/Spawning.tscn"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 State="*res://scripts/state.gd"
+SignalBus="*res://scripts/signal_bus.gd"
 
 [dialogue_manager]
 

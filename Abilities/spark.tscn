@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://7lhw0ql55qou"]
+
+[ext_resource type="Script" path="res://Abilities/spark.gd" id="1_1hhn5"]
+[ext_resource type="Script" path="res://components/HitboxComponent.gd" id="2_s5p4c"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7larw"]
+radius = 66.1211
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eir0k"]
+radius = 7.07107
+
+[node name="Spark" type="RigidBody2D"]
+script = ExtResource("1_1hhn5")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_7larw")
+
+[node name="ThrowTime" type="Timer" parent="."]
+wait_time = 2.5
+one_shot = true
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+script = ExtResource("2_s5p4c")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_eir0k")

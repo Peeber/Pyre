@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name Player
 
-@onready var animations = $AnimatedSprite2D
+#@onready var animations = $AnimatedSprite2D
 @onready var facing = $Direction
 @onready var actionable_finder: Area2D = $Direction/ActionableFinder
 @onready var hitbox = $HitboxComponent
@@ -10,39 +10,44 @@ class_name Player
 @onready var dashCD = $DashCD
 @export var speed: int = 35
 @export var isDashVariant: bool = false
-@export var current_Health = 100
-@export var max_Health = 100
-@export var health_bar : ProgressBar
 @export var focus = 0
+@export var focusTick: int = (5/3)
 
 var isWalking = false
 var canDash = true
 var isDashing = false
+var isTalking = false
 
+func _ready():
+	if !SignalBus.is_connected("dialogueBegan",dialogueStart):
+		SignalBus.dialogueBegan.connect(dialogueStart)
+	if !SignalBus.is_connected("dialogueEnded",dialogueEnd):
+		SignalBus.dialogueEnded.connect(dialogueEnd)
 
 func handleInput():
-	if State.isTalking == false and isDashing == false:
+	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
 		velocity = moveDirection*speed
 
 func updateAnimation():
 		if velocity.length() == 0:
 			isWalking = false
-			if animations.is_playing():
-				animations.stop()
+			#if animations.is_playing():
+			#	animations.stop()
 		else:
 			isWalking = true
-			var direction = "Down"
+			var direction = "Right"
 			facing.rotation_degrees = 0
 			if velocity.x < 0: direction = "Left"; facing.rotation_degrees = 90
-			elif velocity.x > 0: direction = "Right"; facing.rotation_degrees = 270
-			elif velocity.y < 0: direction = "Up"; facing.rotation_degrees = 180
+			elif velocity.x > 0: facing.rotation_degrees = 270
+			elif velocity.y < 0: facing.rotation_degrees = 180
 			
 			if isDashing == true:
 				print("play dash animation")
 				#insert dash animation code here
 			else:
-				animations.play("walk" + direction)
+				#animations.play("walk" + direction)
+				print("walk animation would be playing if i had those yet")
 		
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -66,15 +71,17 @@ func _unhandled_input(_event: InputEvent) -> void:
 			canDash = true
 		
 
+func dialogueStart():
+	isTalking = true
+	velocity = velocity * 0
+	updateAnimation()
+	
+func dialogueEnd():
+	isTalking = false
+
 func _physics_process(delta):
 	handleInput()
 	move_and_slide()
 	updateAnimation()
 	
 
-func updateHealth():
-	max_Health = health.MAX_HEALTH
-	current_Health = health.current_Health
-	if current_Health > max_Health:
-		current_Health = max_Health
-	health_bar.update()
