@@ -1,7 +1,5 @@
 extends ProgressBar
 
-@export var player : Player
-
 func _ready():
 	if !SignalBus.is_connected("healthChanged",update):
 		SignalBus.healthChanged.connect(update)

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cibr4lw2klii8"
-path="res://.godot/imported/snow_tiles.png-f8bba7ecae47d9731bf950665b5b8ce1.ctex"
+uid="uid://ge3p6p3rpg0j"
+path="res://.godot/imported/frame_template.png-ff079355f75ccc8a77ee5f3929db6961.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/snow_tiles.png"
-dest_files=["res://.godot/imported/snow_tiles.png-f8bba7ecae47d9731bf950665b5b8ce1.ctex"]
+source_file="res://art/GUI/frame_template.png"
+dest_files=["res://.godot/imported/frame_template.png-ff079355f75ccc8a77ee5f3929db6961.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hy6jbqkw4lgd"
-path="res://.godot/imported/Pyre.png-730f3281d1048ac88edfd784d3f1b667.ctex"
+uid="uid://c2lkq6nluev8g"
+path="res://.godot/imported/testnpc.png-dbc0e520e469c53390a2742283fb95e8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/Pyre.png"
-dest_files=["res://.godot/imported/Pyre.png-730f3281d1048ac88edfd784d3f1b667.ctex"]
+source_file="res://art/NPCs/testnpc.png"
+dest_files=["res://.godot/imported/testnpc.png-dbc0e520e469c53390a2742283fb95e8.ctex"]
 
 [params]
 

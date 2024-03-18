@@ -1,0 +1,151 @@
+[gd_scene load_steps=14 format=3 uid="uid://coc7l5k76j4q1"]
+
+[ext_resource type="Script" path="res://scenes/scene_change.gd" id="1_xfag4"]
+[ext_resource type="Script" path="res://scripts/LucidityBar.gd" id="2_erqom"]
+[ext_resource type="Script" path="res://scripts/FocusBar.gd" id="3_rnwsb"]
+[ext_resource type="PackedScene" uid="uid://db8owlwg03pw8" path="res://scenes/rooms/test_world.tscn" id="4_2i5ng"]
+[ext_resource type="PackedScene" uid="uid://c6acrivxt18wn" path="res://abilities/menu/ability_menu.tscn" id="4_v7oic"]
+[ext_resource type="Texture2D" uid="uid://ge3p6p3rpg0j" path="res://art/GUI/frame_template.png" id="5_be63a"]
+[ext_resource type="Script" path="res://scenes/Ember.gd" id="5_jode1"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_ypc3r"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_mt8gv"]
+font_size = 80
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Animation" id="Animation_ct3je"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_x7dat"]
+resource_name = "fade_in"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_4x8su"]
+resource_name = "fade_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_elmki"]
+_data = {
+"RESET": SubResource("Animation_ct3je"),
+"fade_in": SubResource("Animation_x7dat"),
+"fade_out": SubResource("Animation_4x8su")
+}
+
+[node name="scene_change" type="Node"]
+process_mode = 3
+script = ExtResource("1_xfag4")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="LucidityBar" type="ProgressBar" parent="CanvasLayer"]
+offset_right = 345.0
+offset_bottom = 111.0
+value = 100.0
+script = ExtResource("2_erqom")
+metadata/_edit_use_anchors_ = true
+
+[node name="FocusBar" type="ProgressBar" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -176.0
+offset_right = 176.0
+offset_bottom = 84.0
+grow_horizontal = 2
+script = ExtResource("3_rnwsb")
+metadata/_edit_use_anchors_ = true
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+top_level = true
+z_index = 1
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="Ability Menu" parent="CanvasLayer" instance=ExtResource("4_v7oic")]
+
+[node name="Ember" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_bottom = 160.0
+grow_horizontal = 0
+texture = ExtResource("5_be63a")
+script = ExtResource("5_jode1")
+
+[node name="Label" type="Label" parent="CanvasLayer/Ember"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -23.0
+offset_top = -55.0
+offset_right = 23.0
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "1"
+label_settings = SubResource("LabelSettings_mt8gv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="test_world" parent="." instance=ExtResource("4_2i5ng")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_elmki")
+}
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+limit_left = 0
+limit_top = 0
+limit_right = 2480
+limit_bottom = 1840
+position_smoothing_speed = 10.0
+
+[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+script = ExtResource("5_ypc3r")
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

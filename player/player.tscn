@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://player/player.gd" id="1_gge78"]
 [ext_resource type="PackedScene" uid="uid://bkj3ad11d613f" path="res://components/health_component.tscn" id="3_pv2sa"]
 [ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="4_5li15"]
-[ext_resource type="Texture2D" uid="uid://hy6jbqkw4lgd" path="res://art/Pyre.png" id="4_twik1"]
+[ext_resource type="Texture2D" uid="uid://hy6jbqkw4lgd" path="res://art/Player/Pyre.png" id="4_twik1"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w28qk"]
 radius = 7.0
@@ -750,6 +750,7 @@ _data = {
 }
 
 [node name="Player" type="CharacterBody2D"]
+process_mode = 1
 z_index = 1
 y_sort_enabled = true
 texture_filter = 1
@@ -928,16 +929,17 @@ bone_angle = 42.044
 
 [node name="leg_right" type="Bone2D" parent="Skeleton2D/pelvis"]
 position = Vector2(-13, -6)
-scale = Vector2(1, 1)
 rest = Transform2D(1, 0, 0, 1, -13, -6)
 
 [node name="foot_right" type="Bone2D" parent="Skeleton2D/pelvis/leg_right"]
 position = Vector2(0, 36)
 rest = Transform2D(1, 0, 0, 1, 0, 36)
+auto_calculate_length_and_angle = false
+length = 23.467
+bone_angle = 0.0
 
 [node name="leg_left" type="Bone2D" parent="Skeleton2D/pelvis"]
 position = Vector2(12, -5)
-scale = Vector2(1, 1)
 rest = Transform2D(1, 0, 0, 1, 12, -5)
 
 [node name="foot_left" type="Bone2D" parent="Skeleton2D/pelvis/leg_left"]
@@ -951,3 +953,5 @@ bone_angle = 0.0
 libraries = {
 "": SubResource("AnimationLibrary_1w032")
 }
+
+[connection signal="timeout" from="FocusTimer" to="." method="_on_focus_timer_timeout"]
