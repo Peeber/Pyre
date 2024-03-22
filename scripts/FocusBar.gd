@@ -9,10 +9,8 @@ func _ready():
 
 func update(new_focus):
 	value = new_focus
-	if State.arenaMode and value == 0:
+	if State.arenaMode and value == 0 and visible == true:
 		visible = false
-		print("focus bar closed")
-	else:
+	elif visible == false:
 		visible = true
-		print("focus bar revealed")
 		

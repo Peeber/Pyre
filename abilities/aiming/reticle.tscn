@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://6iavx00pgvaq"]
 
-[ext_resource type="Script" path="res://Reticle.gd" id="1_2u4iv"]
+[ext_resource type="Script" path="res://abilities/aiming/Reticle.gd" id="1_2u4iv"]
 [ext_resource type="Texture2D" uid="uid://dyus0hcg1yrwp" path="res://art/GUI/reticle.png" id="2_d7t64"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ioov3"]

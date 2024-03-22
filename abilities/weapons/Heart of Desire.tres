@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Weapon" load_steps=2 format=3 uid="uid://cb7pbux5i3s44"]
+
+[ext_resource type="Script" path="res://resources/Weapon.gd" id="1_f4swr"]
+
+[resource]
+script = ExtResource("1_f4swr")
+name = "Heart of Desire"
+folder_path = "res://abilities/resources/Heart of Desire/"

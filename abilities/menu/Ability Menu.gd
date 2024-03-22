@@ -10,6 +10,7 @@ var selectedIcon : AbilityIcon
 var isOpen = false
 var isAiming = false
 var freeCast = false
+var IconScene = load("res://abilities/menu/AbilityIcon.tscn")
 signal menuRefreshed
 signal aimEnd
 
@@ -34,7 +35,7 @@ var coneAim = func():
 	pass
 
 var noAim = func():
-	return State.currentPlayer.global_position
+	return State.currentPlayer
 
 var aimDict = {
 	"Reticle" : reticleAim,
@@ -59,13 +60,19 @@ func _ready():
 	refresh()
 
 func aim(ability: Ability):
+	if not ability.aim_type:
+		ability.aim_type = "None"
 	var aim_function = aimDict[ability.aim_type]
 	isAiming = true
 	var target = await aim_function.call()
 	isAiming = false
 	print(ability.ability_name,target)
-	SignalBus.abilityCast.emit(ability,target)
+	if ability.scene:
+		var new_scene = ability.scene.instantiate()
+		State.currentPlayer.get_parent().add_child(new_scene)
+	SignalBus.abilityCast.emit(State.currentPlayer,ability,target,!freeCast)
 	$ColorRect.visible = false
+	freeCast = false
 	close()
 	
 
@@ -74,6 +81,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if isOpen and visible == false:
 		visible = true
 	if Input.is_action_just_pressed("ember") and State.scriptedAbility == false and cantToggle == false and isAiming == false:
+		State.failedCast(State.currentPlayer,!freeCast)
 		SignalBus.closedAbilityMenu.emit()
 	elif Input.is_action_just_pressed("ui_right") and isOpen:
 		var slots = menu.get_children().size()
@@ -103,23 +111,20 @@ func _unhandled_input(_event: InputEvent) -> void:
 		selectedIcon.onSelect()
 	elif Input.is_action_just_pressed("ui_accept"):
 		print("z pressed")
-		if selectedIcon:
+		if selectedSlot != null:
+			selectedIcon = menu.get_child(selectedSlot)
 			if isAiming == false and isOpen == true:
 				isOpen = false
 				$ColorRect.visible = true
 				visible = false
-				if State.currentPlayer.focus == 100:
-					State.currentPlayer.focus = 0
-					freeCast = true
 				aim(selectedIcon.ability)
 			elif isAiming == true and isOpen == false:
 				aimEnd.emit()
 				print("aim ended")
 		
-		
 
-func add_ability(ability_name: String):
-	var ability: Ability = load("res://abilities/menu/" + ability_name + ".tres")
+func add_ability(ability_name: String,weapon : String):
+	var ability: Ability = load("res://abilities/resources/" + weapon + "/" + ability_name + ".tres")
 	if ability:
 		items.append(ability)
 		print("added " + ability_name)
@@ -161,17 +166,22 @@ func refresh():
 	for x in menu.get_children():
 		x.queue_free()
 	for a in items:
-		var icon: AbilityIcon = load("res://abilities/menu/AbilityIcon.tscn").instantiate()
+		#make sure the player has the right weapon to use the ability
+		var allowed = false
+		for w in State.currentPlayer.weapons:
+			print(w.name)
+			print(a.allowed_weapons)
+			if w in a.allowed_weapons:
+				allowed = true
+		if not allowed:
+			continue
+		
+		var icon: AbilityIcon = IconScene.instantiate()
 		menu.add_child(icon)
 		icon.set_sprite(a.texture)
 		icon.name = a.ability_name
 		icon.custom_minimum_size = Vector2(180,180)
 		icon.ability = a
-		#icon.focus_mode = Control.FOCUS_ALL
-		#if lastIcon:
-		#	icon.focus_neighbor_left = lastIcon.get_path()
-		#	lastIcon.focus_neighbor_right = icon.get_path()
-		#lastIcon = icon
 	menuRefreshed.emit()
 		
 
@@ -197,7 +207,15 @@ func open():
 	visible = true
 	selectedSlot = 0
 	selectedIcon = menu.get_child(0)
+	if not selectedIcon:
+		State.unpause()
+		visible = false
+		isOpen = false
+		print("tried to open ability menu with no valid abilities")
+		return
 	selectedIcon.onSelect()
-	print(selectedIcon.name + "selected")
+	print(selectedIcon.ability.ability_name)
+	if State.currentPlayer.focus == 100:
+		State.currentPlayer.focus = 0
+		freeCast = true
 	
-
