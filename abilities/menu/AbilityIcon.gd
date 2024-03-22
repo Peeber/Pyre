@@ -10,10 +10,10 @@ var off_color = Color.hex(0xd4d4d400)
 
 var base_size = 240
 
-func set_sprite(texture : CompressedTexture2D):
+func set_sprite(new_texture : CompressedTexture2D):
 	if not tex:
 		tex = $TextureRect
-	tex.texture = texture
+	tex.texture = new_texture
 
 func onSelect():
 	mark.color = on_color

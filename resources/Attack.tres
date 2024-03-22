@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Attack" load_steps=2 format=3 uid="uid://bup7qmv4lvme7"]
+
+[ext_resource type="Script" path="res://resources/Attack.gd" id="1_gm7va"]
+
+[resource]
+resource_name = "Attack"
+script = ExtResource("1_gm7va")
+attack_damage = 1.0
+knockback_force = 0.0
+canIgnite = false

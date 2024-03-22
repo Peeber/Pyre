@@ -12,9 +12,10 @@ class_name Player
 @export var speed: int = 75
 @export var isDashVariant: bool = false
 @export var focus = 0
-@export var focusTick: int = (5/3.0)
+@export var focusTick: float = (5/3.0)
 @export var direction = "Right"
 @export var embers = 1
+@export var weapons : Array[Weapon] = []
 
 var isWalking = false
 var canDash = true
@@ -32,7 +33,28 @@ func _ready():
 		SignalBus.arenaModeSet.connect(handleArenaMode)
 	if !SignalBus.is_connected("abilityCast",consolidateEmber):
 		SignalBus.abilityCast.connect(consolidateEmber)
+	if !health.is_connected("heartKilled",death):
+		health.heartKilled.connect(death)
 	State.currentPlayer = self
+
+func addWeapon(weapon : String):
+	var new_weapon = load("res://abilities/weapons/" + weapon + ".tres")
+	if new_weapon and !(new_weapon in weapons):
+		weapons.append(new_weapon)
+		print("gave " + weapon + " to player")
+		return true
+	return false
+	
+
+func removeWeapon(weapon : String):
+	for x in weapons:
+		if x.name == weapon:
+			var index = weapons.find(x)
+			weapons.remove_at(index)
+			print("removed " + weapon + " from player")
+			return true
+	return false
+	
 
 func handleInput():
 	if State.paused: return
@@ -122,7 +144,7 @@ func teleportTo(new_position):
 	print("player is now at " + str(global_position))
 	
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	handleInput()
 	move_and_slide()
 	updateAnimation()
@@ -130,19 +152,22 @@ func _physics_process(delta):
 
 func _on_focus_timer_timeout():
 	if focus == 100:
-		print("focus full")
 		return
 	elif focus + focusTick > 100:
 		focus = 100
-		print("focus filled")
 	else:
 		focus += focusTick
-		print("focus increased")
-	print("focus changed")
 	SignalBus.focusChanged.emit(focus)
 	
-func consolidateEmber(caster,ability, target):
-	if ability.ability_name == "Consolidate Ember" and target is Player:
-		if embers < State.emberMax:
-			embers += 1
-			SignalBus.emberChanged.emit(embers)
+func consolidateEmber(caster,ability,target,isEmber):
+	if ability.ability_name == "Consolidate Ember":
+		if target is Player:
+			if embers < State.emberMax:
+				print("adding ember")
+				embers += 1
+				SignalBus.emberChanged.emit(embers)
+		else:
+			State.failedCast(caster,isEmber)
+
+func death():
+	print("man im dead")

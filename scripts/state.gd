@@ -39,3 +39,11 @@ func sparkAdded(spark : Spark):
 		var old = sparks[0]
 		sparks.remove_at(0)
 		old.queue_free()
+
+func failedCast(source,isEmber):
+	if State.arenaMode == true and source is Player:
+		if isEmber:
+			State.currentPlayer.embers += 1
+			SignalBus.emberChanged.emit(State.currentPlayer.embers)
+		else:
+			State.currentPlayer.focus = 100

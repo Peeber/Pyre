@@ -12,8 +12,9 @@ func _ready():
 	if !SignalBus.is_connected("sceneChanged",changeScene):
 		SignalBus.sceneChanged.connect(changeScene)
 	#gives the player abilities for testing
-	SignalBus.addedAbility.emit("Consolidate Ember")
-	SignalBus.addedAbility.emit("Spark")
+	State.currentPlayer.addWeapon("Ember of Hope")
+	SignalBus.addedAbility.emit("Consolidate Ember","Ember of Hope")
+	SignalBus.addedAbility.emit("Spark","Ember of Hope")
 	get_viewport().process_mode = Node.PROCESS_MODE_ALWAYS
 
 

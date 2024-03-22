@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://c6acrivxt18wn"]
 
-[ext_resource type="Script" path="res://abilities/code/Ability Menu.gd" id="1_dgyoa"]
 [ext_resource type="Texture2D" uid="uid://ge3p6p3rpg0j" path="res://art/GUI/frame_template.png" id="1_rmt7y"]
+[ext_resource type="Script" path="res://abilities/menu/Ability Menu.gd" id="2_mocsj"]
 
 [node name="AbilityMenu" type="NinePatchRect"]
 process_mode = 3
@@ -19,7 +19,7 @@ grow_horizontal = 2
 grow_vertical = 0
 texture = ExtResource("1_rmt7y")
 region_rect = Rect2(4, 0, 72, 80)
-script = ExtResource("1_dgyoa")
+script = ExtResource("2_mocsj")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1

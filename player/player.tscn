@@ -945,7 +945,8 @@ libraries = {
 "": SubResource("AnimationLibrary_1w032")
 }
 
-[node name="HitboxComponent" parent="." instance=ExtResource("4_5li15")]
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("4_5li15")]
+health_component = NodePath("../HealthComponent")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
 position = Vector2(3.15545e-29, -11)

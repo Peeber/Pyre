@@ -7,3 +7,4 @@ class_name Ability
 @export var aim_type: String = ""
 @export var cost = 100
 @export var scene : PackedScene
+@export var allowed_weapons : Array[Weapon]

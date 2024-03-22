@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Weapon" load_steps=2 format=3 uid="uid://cq8ls6iu0wnn4"]
+
+[ext_resource type="Script" path="res://resources/Weapon.gd" id="1_55ab4"]
+
+[resource]
+script = ExtResource("1_55ab4")
+name = "Ember of Hope"
+folder_path = "res://abilities/resources/Ember of Hope/"
