@@ -10,7 +10,6 @@ func _ready():
 	if !SignalBus.is_connected("emberChanged",refresh):
 		SignalBus.emberChanged.connect(refresh)
 
-
 func refresh(value):
 	label.text = str(value)
 

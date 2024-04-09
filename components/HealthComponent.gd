@@ -5,6 +5,7 @@ class_name HealthComponent
 @export var current_Health : float
 @export var heart : Node #usually the parent, node that this represents the hp of, will be destroyed when hp reaches 0
 signal heartKilled
+signal damaged(damage)
 
 func _ready():
 	current_Health = MAX_HEALTH
@@ -13,9 +14,11 @@ func _ready():
 	
 
 func damage(attack: Attack):
-	print(heart.name + " damaged for " + str(attack.attack_damage))
-	current_Health -= attack.attack_damage
+	var dmg = attack.attack_damage
+	print(heart.name + " damaged for " + str(dmg))
+	current_Health -= dmg
 	SignalBus.healthChanged.emit(heart,current_Health,false)
+	damaged.emit()
 	
 	if current_Health <= 0:
 		heartKilled.emit()

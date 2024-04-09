@@ -953,4 +953,6 @@ position = Vector2(3.15545e-29, -11)
 scale = Vector2(5, 5)
 shape = SubResource("CapsuleShape2D_w28qk")
 
+[connection signal="damaged" from="HealthComponent" to="." method="_on_health_component_damaged"]
 [connection signal="timeout" from="FocusTimer" to="." method="_on_focus_timer_timeout"]
+[connection signal="immuneChanged" from="HitboxComponent" to="." method="_on_hitbox_component_immune_changed"]

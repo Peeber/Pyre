@@ -5,4 +5,4 @@ class_name Attack
 @export var attack_damage : float = 1.0
 @export var knockback_force : float = 0.0
 @export var knockback_direction : Vector2
-@export var statuses : Array[Dictionary] #ex. [{Name = "Burn", Intensity = 1, Duration = 10}]
+@export var statuses : Array #ex. [{"Name" = "Burn", "Intensity" = 1, "Duration" = 10}]

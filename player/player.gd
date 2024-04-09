@@ -16,11 +16,14 @@ class_name Player
 @export var direction = "Right"
 @export var embers = 1
 @export var weapons : Array[Weapon] = []
+@export var iFrameLength : float = 2.5
 
 var isWalking = false
 var canDash = true
 var isDashing = false
 var isTalking = false
+var flashModulate = Color(1,1,1,0.6)
+var standardModulate = Color(1,1,1,1)
 
 func _ready():
 	if !SignalBus.is_connected("dialogueBegan",dialogueStart):
@@ -171,3 +174,12 @@ func consolidateEmber(caster,ability,target,isEmber):
 
 func death():
 	print("man im dead")
+
+func _on_health_component_damaged():
+	hitbox.makeImmune(true,iFrameLength)
+
+func _on_hitbox_component_immune_changed(is_immune):
+	if is_immune:
+		modulate = flashModulate
+	else:
+		modulate = standardModulate
