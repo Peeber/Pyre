@@ -6,6 +6,7 @@ class_name Player
 @onready var actionable_finder: Area2D = $Direction/ActionableFinder
 @onready var hitbox = $HitboxComponent
 @onready var health = $HealthComponent
+@onready var knockback = $KnockbackComponent
 @onready var dashFrames = $DashFrames
 @onready var dashCD = $DashCD
 @onready var focusTimer = $FocusTimer
@@ -183,3 +184,9 @@ func _on_hitbox_component_immune_changed(is_immune):
 		modulate = flashModulate
 	else:
 		modulate = standardModulate
+
+func relink_components():
+	hitbox.health_component = health
+	hitbox.knockback_component = knockback
+	health.heart = self
+	knockback.parent = self

@@ -58,6 +58,7 @@ func _on_ready_to_fire():
 					createBeam(x)
 
 func setupAttack():
+	attack.source = source.get_path()
 	attack.attack_damage = 5
 	attack.knockback_force = 0
 	var stat_array = []

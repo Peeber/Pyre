@@ -36,7 +36,7 @@ func _on_animation_player_animation_finished(anim_name):
 			
 			#kidnap player
 			var tilemap : TileMap
-			var player = State.currentPlayer.duplicate()
+			var player : Player = State.currentPlayer.duplicate()
 			var exit : Marker2D
 			for x in Globals.get_all_children(next_world):
 				if x is TileMap:
@@ -51,6 +51,7 @@ func _on_animation_player_animation_finished(anim_name):
 			print(player.get_parent())
 			print(State.currentPlayer.get_parent())
 			State.currentPlayer = player
+			player.relink_components()
 			new_camera.set_follow_target_node(player)
 			print(new_camera.follow_target)
 			SignalBus.teleportedTo.emit(exit.global_position)

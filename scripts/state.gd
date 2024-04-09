@@ -34,6 +34,9 @@ func unpause():
 	paused = false
 
 func sparkAdded(spark : Spark):
+	for x in sparks:
+		if not is_instance_valid(x):
+			sparks.remove_at(sparks.find(x))
 	sparks.append(spark)
 	if sparks.size() > sparkMax:
 		var old = sparks[0]

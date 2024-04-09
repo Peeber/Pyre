@@ -8,9 +8,9 @@ class_name HitboxComponent
 signal immuneChanged(is_immune : bool)
 
 func damage(attack: Attack):
-	if health_component and not isImmune:
+	if health_component and is_instance_valid(health_component) and not isImmune:
 		health_component.damage(attack)
-	if knockback_component and not isImmovable:
+	if knockback_component and is_instance_valid(knockback_component) and not isImmovable:
 		knockback_component.knockback(attack.source,attack.knockback_force,attack.knockback_direction)
 
 func makeImmune(is_immune,duration : float):
