@@ -53,7 +53,7 @@ offset_top = -291.0
 offset_right = 624.138
 offset_bottom = -6.0
 bbcode_enabled = true
-text = "[font_size=30][center]Haberdasher[/center][/font_size]"
+text = "[font_size=30][center]Name Here[/center][/font_size]"
 fit_content = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
