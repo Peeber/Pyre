@@ -11,13 +11,14 @@ var scriptedAbility : bool = false
 var emberMax : int = 1
 var sparkMax : int = 3
 var sparks = []
+var scene_changing : bool = false
 
 func toggleFocusPaused():
 	focusPaused = !focusPaused
 
-func toggleArenaMode(instantFocus : bool):
+func toggleArenaMode(delayFocus : bool = false):
 	arenaMode = !arenaMode
-	if instantFocus:
+	if not delayFocus:
 		toggleFocusPaused()
 		SignalBus.arenaModeSet.emit(arenaMode)
 		

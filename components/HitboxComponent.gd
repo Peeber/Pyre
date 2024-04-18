@@ -11,6 +11,7 @@ func damage(attack: Attack):
 	if health_component and is_instance_valid(health_component) and not isImmune:
 		health_component.damage(attack)
 	if knockback_component and is_instance_valid(knockback_component) and not isImmovable:
+		print("knockback triggered on " + get_parent().name)
 		knockback_component.knockback(attack.source,attack.knockback_force,attack.knockback_direction)
 
 func makeImmune(is_immune,duration : float):

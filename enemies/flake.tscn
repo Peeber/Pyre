@@ -1,15 +1,18 @@
-[gd_scene load_steps=5 format=3 uid="uid://bl75lk8l54ie"]
+[gd_scene load_steps=6 format=3 uid="uid://bl75lk8l54ie"]
 
 [ext_resource type="Script" path="res://enemies/flake.gd" id="1_rcx6r"]
+[ext_resource type="Resource" uid="uid://cb7pbux5i3s44" path="res://abilities/weapons/Heart of Desire.tres" id="2_5ixhn"]
 [ext_resource type="PackedScene" uid="uid://bkj3ad11d613f" path="res://components/health_component.tscn" id="2_42nc1"]
 [ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="3_0lay5"]
 [ext_resource type="PackedScene" uid="uid://0td010ypag0w" path="res://components/knockback_component.tscn" id="4_b4nuu"]
 
-[node name="Flake" type="CharacterBody2D" node_paths=PackedStringArray("hitbox", "hp", "knockback")]
+[node name="Flake" type="CharacterBody2D" node_paths=PackedStringArray("hitbox", "hp", "knockback", "navigation_agent")]
 script = ExtResource("1_rcx6r")
 hitbox = NodePath("HitboxComponent")
 hp = NodePath("HealthComponent")
 knockback = NodePath("KnockbackComponent")
+navigation_agent = NodePath("NavigationAgent2D")
+weapon_list = Array[Resource("res://resources/Weapon.gd")]([ExtResource("2_5ixhn")])
 
 [node name="HealthComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("2_42nc1")]
 MAX_HEALTH = 400.0

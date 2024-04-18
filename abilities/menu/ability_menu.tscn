@@ -53,8 +53,9 @@ offset_top = -291.0
 offset_right = 624.138
 offset_bottom = -6.0
 bbcode_enabled = true
-text = "[font_size=30][center]Name Here[/center][/font_size]"
+text = "[font_size=36][center]Name Here[/center][/font_size]"
 fit_content = true
+scroll_active = false
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0

@@ -18,6 +18,9 @@ class_name Player
 @export var embers = 1
 @export var weapons : Array[Weapon] = []
 @export var iFrameLength : float = 2.5
+@export var movement_override : bool = false
+
+signal movement_override_ended
 
 var isWalking = false
 var canDash = true
@@ -64,7 +67,7 @@ func handleInput():
 	if State.paused: return
 	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-		velocity = moveDirection*speed
+		if not movement_override: velocity = moveDirection*speed
 		
 
 func updateAnimation():
@@ -95,7 +98,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		if actionables.size() > 0:
 			actionables[0].action()
 			return
-	elif Input.is_action_just_pressed("dash") and isWalking == true and canDash == true:
+	elif Input.is_action_just_pressed("dash") and isWalking == true and canDash == true and not movement_override:
 		if isDashVariant == false:
 			baseDash()
 	elif Input.is_action_just_pressed("ember") and State.abilitiesAllowed == true:
@@ -150,6 +153,7 @@ func teleportTo(new_position):
 
 func _physics_process(_delta):
 	handleInput()
+	velocity += knockback.knockback_vector
 	move_and_slide()
 	updateAnimation()
 	
@@ -186,6 +190,9 @@ func _on_hitbox_component_immune_changed(is_immune):
 		modulate = standardModulate
 
 func relink_components():
+	hitbox = $HitboxComponent
+	health = $HealthComponent
+	knockback = $KnockbackComponent
 	hitbox.health_component = health
 	hitbox.knockback_component = knockback
 	health.heart = self

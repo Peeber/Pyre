@@ -3,6 +3,7 @@ extends Control
 @export var items: Array[Ability]
 @onready var menu = $ScrollContainer/HBoxContainer
 @onready var toggleDebounce = $ToggleDebounce
+@onready var textbox = $Description
 
 var cantToggle = false
 var selectedSlot : int = 0
@@ -77,7 +78,7 @@ func aim(ability: Ability):
 	
 
 func _unhandled_input(_event: InputEvent) -> void:
-	if !State.paused: return
+	if !State.paused or State.scene_changing: return
 	if isOpen and visible == false:
 		visible = true
 	if Input.is_action_just_pressed("ember") and State.scriptedAbility == false and cantToggle == false and isAiming == false:
@@ -96,6 +97,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		selectedIcon = menu.get_child(selectedSlot)
 		print("slot " + str(selectedSlot) + " selected")
 		selectedIcon.onSelect()
+		updateText(selectedIcon.ability)
 	elif Input.is_action_just_pressed("ui_left") and isOpen:
 		var slots = menu.get_children().size()
 		if not selectedIcon:
@@ -109,6 +111,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		selectedIcon = menu.get_child(selectedSlot)
 		print("slot " + str(selectedSlot) + " selected")
 		selectedIcon.onSelect()
+		updateText(selectedIcon.ability)
 	elif Input.is_action_just_pressed("ui_accept"):
 		print("z pressed")
 		if selectedSlot != null:
@@ -148,7 +151,6 @@ func replace_ability(ability_name: String, old: String):
 		print(ans[1] + " is being replaced")
 		items[ans[1]] = ability
 		print("replaced " + old + " with " + items[ans[1]].ability_name)
-		return
 	else:
 		print("player does not have " + old + ", adding instead")
 		items.append(ability)
@@ -198,6 +200,11 @@ func close():
 	State.unpause()
 	freeCast = false
 
+func updateText(ability : Ability):
+	var ability_name = "[font_size=36][center]" + ability.ability_name + "[/center][/font_size]"
+	var description = "[font_size=28][center]" + ability.description + "[/center][/font_size]"
+	textbox.text = ability_name + "\n" + description
+
 func open():
 	isOpen = true
 	runDebounce()
@@ -214,6 +221,7 @@ func open():
 		print("tried to open ability menu with no valid abilities")
 		return
 	selectedIcon.onSelect()
+	updateText(selectedIcon.ability)
 	print(selectedIcon.ability.ability_name)
 	if State.currentPlayer.focus == 100:
 		State.currentPlayer.focus = 0

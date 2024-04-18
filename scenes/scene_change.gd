@@ -19,6 +19,7 @@ func _ready():
 
 
 func changeScene(next_world_name: String):
+	State.scene_changing = true
 	print("changing scene from " + current_world.name + " to " + next_world_name)
 	next_world = load("res://scenes/rooms/" + next_world_name + ".tscn").instantiate()
 	next_world.z_index = -1
@@ -67,6 +68,9 @@ func _on_animation_player_animation_finished(anim_name):
 			$CanvasLayer/ColorRect.color = Color(0,0,0,0)
 			anim.play("fade_out")
 		"fade_out":
+			State.toggleArenaMode()
+			State.toggleArenaMode()
 			new_camera.set_tween_on_load(true)
 			old_camera = new_camera
 			new_camera = null
+			State.scene_changing = false
