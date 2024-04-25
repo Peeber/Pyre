@@ -16,6 +16,12 @@ Nathan: Beef or chicken?
 	do SignalBus.healthChanged.emit("Player",50,false)
 	do State.toggleArenaMode()
 	=> advance
+- Shut up wizard fight me
+	Pyre: Couldn't give a sus, wizard fight time, I cast gun.
+	Nathan: I cast Flake.
+	do EnemyHandler.spawn("flake",State.currentPlayer.position + Vector2(0,-50))
+	do SignalBus.dialogueEnded.emit()
+	=> END
 - Start again => start
 - End the conversation 
 	do SignalBus.dialogueEnded.emit()

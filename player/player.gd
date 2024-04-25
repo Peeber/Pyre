@@ -103,6 +103,14 @@ func _unhandled_input(_event: InputEvent) -> void:
 			baseDash()
 	elif Input.is_action_just_pressed("ember") and State.abilitiesAllowed == true:
 		activateAbility()
+	elif Input.is_action_just_pressed("dev_flake_summon"):
+		devFlakeSpawn()
+
+func devFlakeSpawn():
+	print("spawning Flake")
+	var flake = EnemyHandler.spawn("flake",position + Vector2(0,-50))
+	print(flake)
+	
 
 func activateAbility():
 	if State.arenaMode and focus < 100:
@@ -167,7 +175,7 @@ func _on_focus_timer_timeout():
 		focus += focusTick
 	SignalBus.focusChanged.emit(focus)
 	
-func consolidateEmber(caster,ability,target,isEmber):
+func consolidateEmber(caster,ability,target,isEmber = false):
 	if ability.ability_name == "Consolidate Ember":
 		if target is Player:
 			if embers < State.emberMax:
@@ -196,4 +204,4 @@ func relink_components():
 	hitbox.health_component = health
 	hitbox.knockback_component = knockback
 	health.heart = self
-	knockback.parent = self
+	knockback.heart = self

@@ -17,6 +17,8 @@ func _ready():
 	SignalBus.addedAbility.emit("Spark","Ember of Hope")
 	get_viewport().process_mode = Node.PROCESS_MODE_ALWAYS
 
+func get_current_world():
+	return current_world
 
 func changeScene(next_world_name: String):
 	State.scene_changing = true

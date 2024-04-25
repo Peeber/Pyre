@@ -22,7 +22,7 @@ func makeImmune(is_immune,duration : float):
 	
 	if duration and duration >= 0:
 		var interrupted = false
-		immuneChanged.connect(func(immune):
+		immuneChanged.connect(func(_immune):
 			interrupted = true
 		)
 		

@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://bl75lk8l54ie"]
+[gd_scene load_steps=8 format=3 uid="uid://bl75lk8l54ie"]
 
 [ext_resource type="Script" path="res://enemies/flake.gd" id="1_rcx6r"]
 [ext_resource type="Resource" uid="uid://cb7pbux5i3s44" path="res://abilities/weapons/Heart of Desire.tres" id="2_5ixhn"]
 [ext_resource type="PackedScene" uid="uid://bkj3ad11d613f" path="res://components/health_component.tscn" id="2_42nc1"]
+[ext_resource type="Resource" uid="uid://p3wa8c6i2fnv" path="res://abilities/resources/Heart of Desire/Flake Rush.tres" id="2_a5t0i"]
 [ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="3_0lay5"]
 [ext_resource type="PackedScene" uid="uid://0td010ypag0w" path="res://components/knockback_component.tscn" id="4_b4nuu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xbg1g"]
+radius = 65.0692
 
 [node name="Flake" type="CharacterBody2D" node_paths=PackedStringArray("hitbox", "hp", "knockback", "navigation_agent")]
 script = ExtResource("1_rcx6r")
@@ -12,6 +16,8 @@ hitbox = NodePath("HitboxComponent")
 hp = NodePath("HealthComponent")
 knockback = NodePath("KnockbackComponent")
 navigation_agent = NodePath("NavigationAgent2D")
+speed = 125
+move_list = Array[Resource("res://resources/ability.gd")]([ExtResource("2_a5t0i")])
 weapon_list = Array[Resource("res://resources/Weapon.gd")]([ExtResource("2_5ixhn")])
 
 [node name="HealthComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("2_42nc1")]
@@ -22,6 +28,9 @@ heart = NodePath("..")
 [node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component", "knockback_component") instance=ExtResource("3_0lay5")]
 health_component = NodePath("../HealthComponent")
 knockback_component = NodePath("../KnockbackComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_xbg1g")
 
 [node name="KnockbackComponent" parent="." instance=ExtResource("4_b4nuu")]
 

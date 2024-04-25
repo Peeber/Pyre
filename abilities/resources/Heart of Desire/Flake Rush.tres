@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=4 format=3 uid="uid://p3wa8c6i2fnv"]
+
+[ext_resource type="Resource" uid="uid://cb7pbux5i3s44" path="res://abilities/weapons/Heart of Desire.tres" id="1_otulu"]
+[ext_resource type="Script" path="res://resources/ability.gd" id="2_7lrf1"]
+[ext_resource type="PackedScene" uid="uid://5divajq3poxi" path="res://abilities/code/Flake Rush.tscn" id="2_srbvb"]
+
+[resource]
+script = ExtResource("2_7lrf1")
+ability_name = "Flake Rush"
+description = "A series of 3 rapid charges towards a target. Landing a hit cancels the attack and stuns the user for 3 seconds."
+aim_type = "Line"
+cost = 100
+scene = ExtResource("2_srbvb")
+allowed_weapons = Array[Resource("res://resources/Weapon.gd")]([ExtResource("1_otulu")])
+is_parented = true
