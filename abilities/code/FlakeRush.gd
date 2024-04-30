@@ -4,7 +4,7 @@ var damage : float = 20.0
 var force : float = 15.0
 var interrupted = false
 var is_ai : bool = false
-var dash_length = 0.75
+var dash_length = 3
 var original_speed : float
 
 var resource = load("res://abilities/resources/Heart of Desire/Flake Rush.tres")
@@ -65,18 +65,24 @@ func chain_dash():
 	original_speed = caster.speed
 	if !is_ai:
 		caster.movement_override = true
+	print("starting chain dash loop")
 	for x in 3:
+		print("dash ",x)
 		if interrupted:
 			end()
 			return
-		await dash_ended
+		if x > 0:
+			await dash_ended
 		dash()
 	end()
 
 func dash():
-	caster.speed = 200
+	caster.speed += 100
 	if is_ai:
 		caster.switch_move_mode("seek")
+	print("starting dash")
+	await get_tree().create_timer(dash_length).timeout
+	print("dash over")
 	dash_ended.emit()
 
 func end():

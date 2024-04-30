@@ -67,7 +67,7 @@ func handleInput():
 	if State.paused: return
 	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-		if not movement_override: velocity = moveDirection*speed
+		if not movement_override: velocity = moveDirection.normalized() * speed
 		
 
 func updateAnimation():
@@ -110,6 +110,8 @@ func devFlakeSpawn():
 	print("spawning Flake")
 	var flake = EnemyHandler.spawn("flake",position + Vector2(0,-50))
 	print(flake)
+	flake.build()
+	print("flake built through dev spawn")
 	
 
 func activateAbility():

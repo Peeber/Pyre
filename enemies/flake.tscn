@@ -16,7 +16,7 @@ hitbox = NodePath("HitboxComponent")
 hp = NodePath("HealthComponent")
 knockback = NodePath("KnockbackComponent")
 navigation_agent = NodePath("NavigationAgent2D")
-speed = 125
+speed = 300
 move_list = Array[Resource("res://resources/ability.gd")]([ExtResource("2_a5t0i")])
 weapon_list = Array[Resource("res://resources/Weapon.gd")]([ExtResource("2_5ixhn")])
 
@@ -35,3 +35,6 @@ shape = SubResource("CircleShape2D_xbg1g")
 [node name="KnockbackComponent" parent="." instance=ExtResource("4_b4nuu")]
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+avoidance_enabled = true
+
+[connection signal="built" from="." to="." method="_on_built"]

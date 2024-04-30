@@ -27,8 +27,6 @@ func spawn(enemy_name : String, pos : Vector2):
 	print("added enemy as child of tilemap")
 	enemy.position = pos
 	print("moved enemy to ",pos)
-	enemy.build()
-	print("enemy built")
 	
 	print("successfully spawned " + enemy.name)
 	return enemy

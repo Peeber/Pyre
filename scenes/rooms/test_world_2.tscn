@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://hmkgg4684p2i"]
+[gd_scene load_steps=12 format=3 uid="uid://hmkgg4684p2i"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="1_lcpo6"]
 [ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/Tilesets/snow_tiles.png" id="2_7cwqg"]
@@ -910,6 +910,12 @@ duration = 0.0
 transition = 0
 ease = 2
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_7shew"]
+vertices = PackedVector2Array(3613, 60, 3619, 2656, 62, 2656, 39, 49)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(29, 39, 3623, 51, 3629, 2666, 52, 2666)])
+source_geometry_group_name = &"navigation_polygon_source_group"
+
 [node name="test_world_2" type="Node2D"]
 process_mode = 1
 
@@ -959,3 +965,6 @@ limit/smoothed = false
 tween_parameters = SubResource("Resource_uc55g")
 tween_on_load = false
 inactive_update_mode = 0
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_7shew")
