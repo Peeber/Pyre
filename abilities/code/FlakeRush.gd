@@ -4,7 +4,7 @@ var damage : float = 20.0
 var force : float = 15.0
 var interrupted = false
 var is_ai : bool = false
-var dash_length = 3
+var dash_length = 1.5
 var original_speed : float
 
 var resource = load("res://abilities/resources/Heart of Desire/Flake Rush.tres")
@@ -22,6 +22,7 @@ func _ready():
 	caster = get_parent()
 
 func _on_area_entered(area):
+	print(area.name)
 	if area.get_parent() == caster or !(area is HitboxComponent):
 		return
 	if attack:
@@ -77,12 +78,15 @@ func chain_dash():
 	end()
 
 func dash():
-	caster.speed += 100
+	caster.speed = 400
 	if is_ai:
 		caster.switch_move_mode("seek")
 	print("starting dash")
 	await get_tree().create_timer(dash_length).timeout
 	print("dash over")
+	if is_ai:
+		caster.switch_move_mode("stationary")
+	await get_tree().create_timer(0.1).timeout
 	dash_ended.emit()
 
 func end():

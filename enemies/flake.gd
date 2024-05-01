@@ -12,4 +12,4 @@ func _on_built():
 	move_target = State.currentPlayer
 	act_debounce()
 	switch_move_mode("seek_homing")
-	switch_act_mode("none")
+	switch_act_mode("random_attack")

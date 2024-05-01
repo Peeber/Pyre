@@ -109,10 +109,9 @@ func _on_move_frequency_updated():
 
 func _on_aggression_updated():
 	if act_timer:
-		act_timer.wait_time = (1 - aggression)
+		act_timer.wait_time = 4 * (1 - aggression)
 
 func _on_navigation_agent_2d_velocity_computed(safe_velocity):
-	print("computing safe velocity")
 	if navigation_agent.is_navigation_finished() == false:
 		if pathfinding and not movement_override:
 			if velocity == Vector2.ZERO:
@@ -174,12 +173,12 @@ var seek_homing_mode = func():
 
 var stay_mode = func():
 	pathfinding = false
+	velocity = Vector2.ZERO
 	navigation_agent.set_velocity(Vector2.ZERO)
 
 func _physics_process(delta):
 	if navigation_agent.is_navigation_finished() == false and pathfinding:
 		velocity = (position.direction_to(navigation_agent.get_next_path_position())) * speed
-		print(velocity)
 		navigation_agent.set_velocity(velocity)
 
 var move_modes = {
@@ -225,7 +224,7 @@ var act_modes = {
 func switch_move_mode(mode : String):
 	if mode == move_mode:
 		return
-	var mode_func : Callable = move_modes[mode]
+	var mode_func = move_modes[mode]
 	if !(mode_func is Callable) or not mode_func:
 		print("invalid move mode, aborting")
 		return
