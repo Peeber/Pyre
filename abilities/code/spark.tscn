@@ -44,8 +44,8 @@ shape = SubResource("RectangleShape2D_ou26b")
 
 [node name="HealthComponent" type="Node2D" parent="." node_paths=PackedStringArray("heart")]
 script = ExtResource("4_h3bnm")
-MAX_HEALTH = 25.0
-current_Health = 25.0
+MAX_HEALTH = 1.0
+current_Health = 1.0
 heart = NodePath("..")
 
 [node name="KnockbackComponent" parent="." instance=ExtResource("5_08bkv")]

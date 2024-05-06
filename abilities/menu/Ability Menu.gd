@@ -206,6 +206,8 @@ func updateText(ability : Ability):
 	textbox.text = ability_name + "\n" + description
 
 func open():
+	if State.scene_changing:
+		return
 	isOpen = true
 	runDebounce()
 	State.pause()

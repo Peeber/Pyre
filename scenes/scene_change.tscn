@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://coc7l5k76j4q1"]
+[gd_scene load_steps=16 format=3 uid="uid://coc7l5k76j4q1"]
 
 [ext_resource type="Script" path="res://scenes/scene_change.gd" id="1_xfag4"]
 [ext_resource type="Script" path="res://scripts/LucidityBar.gd" id="2_erqom"]
@@ -8,6 +8,11 @@
 [ext_resource type="Texture2D" uid="uid://ge3p6p3rpg0j" path="res://art/GUI/frame_template.png" id="5_be63a"]
 [ext_resource type="Script" path="res://scenes/Ember.gd" id="5_jode1"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_ypc3r"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_steya"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_od65w"]
+bg_color = Color(0.807843, 0.364706, 0.0823529, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_mt8gv"]
 font_size = 80
@@ -77,6 +82,8 @@ script = ExtResource("1_xfag4")
 [node name="LucidityBar" type="ProgressBar" parent="CanvasLayer"]
 offset_right = 345.0
 offset_bottom = 111.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_steya")
+theme_override_styles/fill = SubResource("StyleBoxFlat_od65w")
 value = 100.0
 script = ExtResource("2_erqom")
 metadata/_edit_use_anchors_ = true
@@ -139,6 +146,11 @@ libraries = {
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(960, 540)
+process_callback = 0
+limit_left = 0
+limit_top = 0
+limit_right = 2480
+limit_bottom = 1840
 position_smoothing_speed = 10.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]

@@ -17,6 +17,10 @@ func _on_first_hit():
 	interrupted = true
 
 func _ready():
+	if not hit_cd:
+		hit_cd = $Timer
+	if monitorable:
+		monitorable = false
 	if !SignalBus.is_connected("abilityCast",on_cast):
 		SignalBus.abilityCast.connect(on_cast)
 	caster = get_parent()
@@ -30,15 +34,13 @@ func _on_area_entered(area):
 	first_hit.emit()
 
 func build_attack():
-	if attack and attack.attack_damage:
-		return
-	else:
-		attack = load("res://resources/Attack.tres")
-		attack.attack_damage = damage
-		attack.source = caster.get_path()
-		attack.knockback_force = force
+	var standard_attack = load("res://resources/Attack.tres")
+	standard_attack.attack_damage = damage
+	standard_attack.source = caster.get_path()
+	standard_attack.knockback_force = force
+	return standard_attack
 
-func on_cast(source, ability, target):
+func on_cast(source, ability, target, _is_ember):
 	if source != caster or ability != resource:
 		return
 	if caster is Enemy:
@@ -56,7 +58,9 @@ func on_cast(source, ability, target):
 		hurtbox = hurtbox.duplicate()
 		hurtbox.scale *= 1.2
 		add_child(hurtbox)
-	build_attack()
+	print("building attack")
+	if not attack:
+		attack = build_attack()
 	enable(attack)
 	print(caster.name + " beginning chain dash")
 	chain_dash()
@@ -70,8 +74,7 @@ func chain_dash():
 	for x in 3:
 		print("dash ",x)
 		if interrupted:
-			end()
-			return
+			break
 		if x > 0:
 			await dash_ended
 		dash()
@@ -82,6 +85,7 @@ func dash():
 	if is_ai:
 		caster.switch_move_mode("seek")
 	print("starting dash")
+	print(attack.attack_damage)
 	await get_tree().create_timer(dash_length).timeout
 	print("dash over")
 	if is_ai:

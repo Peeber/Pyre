@@ -3,6 +3,7 @@ class_name Spark
 
 @onready var ThrowTime = $ThrowTime
 @onready var area = $Area2D
+@onready var hp = $HealthComponent
 @export var caster : PhysicsBody2D
 @export var target : Vector2
 @export var force = 250
@@ -18,7 +19,14 @@ var laseredBy = []
 func _ready():
 	if !SignalBus.is_connected("abilityCast",abilityCast):
 		SignalBus.abilityCast.connect(abilityCast)
+	if !hp.is_connected("heartKilled",death):
+		hp.heartKilled.connect(death)
 	visible = false
+
+func death():
+	for x in ownedLasers:
+		x.queue_free()
+	queue_free()
 
 #insures two lasers cant laser each other for double damage
 func claimSpark(claimer):

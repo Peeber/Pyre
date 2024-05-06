@@ -953,6 +953,7 @@ script = ExtResource("4_dsye3")
 follow_mode = 1
 tween_resource = SubResource("Resource_ldpy7")
 tween_on_load = false
+limit_target = NodePath("../TileMap")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_7shew")

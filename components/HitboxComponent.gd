@@ -6,13 +6,18 @@ class_name HitboxComponent
 @export var isImmune : bool = false #immune to damage
 @export var isImmovable: bool = false #immune to knockback
 signal immuneChanged(is_immune : bool)
+signal hit
+signal damaging_hit
+signal knocking_hit
 
 func damage(attack: Attack):
+	hit.emit()
 	if health_component and is_instance_valid(health_component) and not isImmune:
 		health_component.damage(attack)
+		damaging_hit.emit()
 	if knockback_component and is_instance_valid(knockback_component) and not isImmovable:
-		print("knockback triggered on " + get_parent().name)
 		knockback_component.knockback(attack.source,attack.knockback_force,attack.knockback_direction)
+		knocking_hit.emit()
 
 func makeImmune(is_immune,duration : float):
 	if isImmune == is_immune:

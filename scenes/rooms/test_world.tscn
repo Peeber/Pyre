@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://db8owlwg03pw8"]
+[gd_scene load_steps=20 format=3 uid="uid://db8owlwg03pw8"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="1_22ddv"]
 [ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/Tilesets/snow_tiles.png" id="2_2itp7"]
@@ -9,6 +9,8 @@
 [ext_resource type="Resource" uid="uid://du80ybulvhlc" path="res://dialogue/test.dialogue" id="6_ew6e8"]
 [ext_resource type="PackedScene" uid="uid://7amcl7lnewu6" path="res://player/player.tscn" id="7_4ac50"]
 [ext_resource type="PackedScene" uid="uid://crmdboi4oi8f5" path="res://scenes/door.tscn" id="9_50ino"]
+[ext_resource type="PackedScene" uid="uid://bvkedqorhbnty" path="res://abilities/code/ContactDamage.tscn" id="10_7i7b5"]
+[ext_resource type="Script" path="res://resources/Attack.gd" id="11_ubg5c"]
 
 [sub_resource type="Resource" id="Resource_0vf3t"]
 script = ExtResource("2_kfqrj")
@@ -917,6 +919,17 @@ size = Vector2(16, 15)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bsapl"]
 size = Vector2(64, 61)
 
+[sub_resource type="Resource" id="Resource_xlj02"]
+script = ExtResource("11_ubg5c")
+source = NodePath("../Sprite2D")
+attack_damage = 75.0
+knockback_force = 500.0
+knockback_direction = Vector2(0, 1)
+statuses = []
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b4of3"]
+radius = 73.9797
+
 [node name="test_world" type="Node2D"]
 process_mode = 1
 
@@ -926,6 +939,7 @@ script = ExtResource("1_22ddv")
 follow_mode = 1
 tween_resource = SubResource("Resource_0vf3t")
 tween_on_load = false
+limit_target = NodePath("../TileMap")
 
 [node name="TileMap" type="TileMap" parent="."]
 y_sort_enabled = true
@@ -972,3 +986,13 @@ shape = SubResource("RectangleShape2D_bsapl")
 
 [node name="Marker2D" type="Marker2D" parent="TileMap/Door"]
 position = Vector2(597, 193)
+
+[node name="ContactDamage" parent="TileMap" node_paths=PackedStringArray("caster", "shape") instance=ExtResource("10_7i7b5")]
+caster = NodePath("../Sprite2D")
+shape = NodePath("CollisionShape2D")
+attack = SubResource("Resource_xlj02")
+autostart = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TileMap/ContactDamage"]
+position = Vector2(1558, 985)
+shape = SubResource("CircleShape2D_b4of3")

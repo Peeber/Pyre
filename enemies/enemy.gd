@@ -101,7 +101,7 @@ var death_mode = func():
 		death_function.call()
 		await ready_to_free
 	if not mulligan:
-		self.queue_free()
+		EnemyHandler.remove(self)
 
 func _on_move_frequency_updated():
 	if move_timer:
@@ -114,10 +114,6 @@ func _on_aggression_updated():
 func _on_navigation_agent_2d_velocity_computed(safe_velocity):
 	if navigation_agent.is_navigation_finished() == false:
 		if pathfinding and not movement_override:
-			if velocity == Vector2.ZERO:
-				pathfinding = false
-				move_and_slide()
-				return
 			if intelligence > 0:
 				velocity = safe_velocity.normalized() * speed
 	move_and_slide()
@@ -157,7 +153,6 @@ var seek_homing_mode = func():
 	seek_timer.timeout.connect(func():
 		if movement_override or stunned:
 			return
-		print("setting target position")
 		navigation_agent.target_position = move_target.global_position
 	)
 	if not movement_override and not stunned:
@@ -272,7 +267,7 @@ func activate_ability(ability : Ability):
 			add_child(new_scene)
 		else:
 			get_parent().add_child(new_scene)
-	SignalBus.abilityCast.emit(self,ability,attack_target)
+	SignalBus.abilityCast.emit(self,ability,attack_target,false)
 
 func act_debounce():
 	act_timer.start()
@@ -287,7 +282,9 @@ func check_burst():
 				burst_function.call(x)
 
 func stun(duration : float):
-	var current_velocity = velocity
+	current_velocity = velocity
+	pathfinding = false
+	velocity = Vector2.ZERO
 	act_timer.paused = true
 	move_timer.paused = true
 	stunned = true
@@ -296,6 +293,7 @@ func stun(duration : float):
 	move_timer.paused = false
 	stunned = false
 	velocity = current_velocity
+	pathfinding = true
 	stun_ended.emit()
 
 func build():

@@ -28,6 +28,7 @@ var isDashing = false
 var isTalking = false
 var flashModulate = Color(1,1,1,0.6)
 var standardModulate = Color(1,1,1,1)
+var moving_velocity : Vector2 = Vector2.ZERO
 
 func _ready():
 	if !SignalBus.is_connected("dialogueBegan",dialogueStart):
@@ -67,7 +68,7 @@ func handleInput():
 	if State.paused: return
 	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-		if not movement_override: velocity = moveDirection.normalized() * speed
+		if not movement_override: moving_velocity = moveDirection.normalized() * speed
 		
 
 func updateAnimation():
@@ -136,7 +137,7 @@ func baseDash():
 	if isDashVariant == false:
 			canDash = false
 			isDashing = true
-			velocity = velocity * 2
+			moving_velocity = moving_velocity * 2
 			hitbox.isImmune = true
 			dashFrames.start()
 			await dashFrames.timeout
@@ -163,7 +164,7 @@ func teleportTo(new_position):
 
 func _physics_process(_delta):
 	handleInput()
-	velocity += knockback.knockback_vector
+	velocity = moving_velocity + knockback.knockback_vector
 	move_and_slide()
 	updateAnimation()
 	

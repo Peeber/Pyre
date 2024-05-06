@@ -29,4 +29,11 @@ func spawn(enemy_name : String, pos : Vector2):
 	print("moved enemy to ",pos)
 	
 	print("successfully spawned " + enemy.name)
+	enemies.append(enemy)
 	return enemy
+
+func remove(enemy : Enemy):
+	var index = enemies.find(enemy)
+	if index >= 0:
+		enemies.remove_at(index)
+		enemy.queue_free()

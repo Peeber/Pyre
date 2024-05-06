@@ -4,12 +4,16 @@ class_name ContactDamage
 @export var caster : Node2D :
 	get: return caster;
 @export var hit_cd : Timer
-@export var shape : CollisionObject2D :
+@export var shape : CollisionShape2D :
 	get: return shape;
 	set(value): shape = value;
 @export var attack : Attack:
 	get: return attack;
-	set(value): attack = value;
+	set(value):
+		attack = value;
+@export var autostart : bool = false :
+	get: return autostart;
+	set(value): autostart = value;
 
 var targets : Array[HitboxComponent] = [] :
 	get: return targets;
@@ -19,12 +23,13 @@ var hitting_targets : bool = false
 func _ready():
 	if not hit_cd:
 		hit_cd = $Timer
-	if not caster:
-		caster = get_parent()
+	if monitorable:
+		monitorable = false
+	if autostart and attack:
+		enable(attack)
 
 func enable(current_attack : Attack = null):
-	if !monitoring:
-		monitoring = true
+	monitoring = true
 	if current_attack != attack:
 		attack = current_attack
 
@@ -71,5 +76,8 @@ func hit_targets():
 
 func hit(area):
 	var temp_attack = attack.duplicate()
-	temp_attack.knockback_direction = caster.velocity.normalized()
+	if caster and caster != self:
+		var generalized_velocity = Physics.get_generalized_velocity(caster)
+		if generalized_velocity != Vector2.ZERO:
+			temp_attack.knockback_direction = generalized_velocity.normalized()
 	area.damage(temp_attack)
