@@ -58,9 +58,12 @@ func _on_ready_to_fire():
 					createBeam(x)
 
 func setupAttack():
+	attack.source = source.get_path()
 	attack.attack_damage = 5
-	attack.knockback_force = 0
-	attack.canIgnite = true
+	attack.knockback_force = 500
+	var stat_array = []
+	stat_array.append({"Name" = "Burn", "Intensity" = 1, "Duration" = 10})
+	attack.statuses = stat_array
 
 func createBeam(beam_target):
 	print("creating beam to spark at ",beam_target.position)
@@ -78,10 +81,8 @@ func createBeam(beam_target):
 	ownedLasers.append(laser)
 	
 func onHit(pos, collider, _normal_vector):
-	print("hit ",collider)
 	if collider.get_parent():
 		if collider.get_parent() is Spark:
-			print("spark hit")
 			return
 	var hitbox : HitboxComponent
 	if collider is HitboxComponent:

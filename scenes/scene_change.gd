@@ -19,6 +19,7 @@ func _ready():
 
 
 func changeScene(next_world_name: String):
+	State.scene_changing = true
 	print("changing scene from " + current_world.name + " to " + next_world_name)
 	next_world = load("res://scenes/rooms/" + next_world_name + ".tscn").instantiate()
 	next_world.z_index = -1
@@ -36,7 +37,7 @@ func _on_animation_player_animation_finished(anim_name):
 			
 			#kidnap player
 			var tilemap : TileMap
-			var player = State.currentPlayer.duplicate()
+			var player : Player = State.currentPlayer.duplicate()
 			var exit : Marker2D
 			for x in Globals.get_all_children(next_world):
 				if x is TileMap:
@@ -51,6 +52,7 @@ func _on_animation_player_animation_finished(anim_name):
 			print(player.get_parent())
 			print(State.currentPlayer.get_parent())
 			State.currentPlayer = player
+			player.relink_components()
 			new_camera.set_follow_target_node(player)
 			print(new_camera.follow_target)
 			SignalBus.teleportedTo.emit(exit.global_position)
@@ -66,6 +68,9 @@ func _on_animation_player_animation_finished(anim_name):
 			$CanvasLayer/ColorRect.color = Color(0,0,0,0)
 			anim.play("fade_out")
 		"fade_out":
+			State.toggleArenaMode()
+			State.toggleArenaMode()
 			new_camera.set_tween_on_load(true)
 			old_camera = new_camera
 			new_camera = null
+			State.scene_changing = false

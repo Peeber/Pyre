@@ -9,11 +9,11 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_7larw"]
 radius = 800.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_eir0k"]
-radius = 7.07107
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ou26b"]
 size = Vector2(8.50559, 6.93475)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eir0k"]
+radius = 7.07107
 
 [node name="Spark" type="RigidBody2D"]
 collision_layer = 64
@@ -32,16 +32,6 @@ shape = SubResource("CircleShape2D_7larw")
 wait_time = 2.0
 one_shot = true
 
-[node name="HitboxComponent" type="Area2D" parent="." node_paths=PackedStringArray("health_component", "knockback_component")]
-collision_layer = 2
-collision_mask = 0
-script = ExtResource("2_s5p4c")
-health_component = NodePath("../HealthComponent")
-knockback_component = NodePath("../KnockbackComponent")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
-shape = SubResource("CircleShape2D_eir0k")
-
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(1.19209e-07, -9.53674e-07)
 scale = Vector2(0.0256214, 0.0257031)
@@ -59,5 +49,15 @@ current_Health = 25.0
 heart = NodePath("..")
 
 [node name="KnockbackComponent" parent="." instance=ExtResource("5_08bkv")]
+
+[node name="HitboxComponent" type="Area2D" parent="." node_paths=PackedStringArray("health_component", "knockback_component")]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("2_s5p4c")
+health_component = NodePath("../HealthComponent")
+knockback_component = NodePath("../KnockbackComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_eir0k")
 
 [connection signal="ready_to_fire" from="." to="." method="_on_ready_to_fire"]

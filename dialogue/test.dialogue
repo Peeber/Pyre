@@ -14,7 +14,7 @@ Nathan: Beef or chicken?
 	Pyre: Chicken is nice.
 	Nathan: FALL.
 	do SignalBus.healthChanged.emit("Player",50,false)
-	do State.toggleArenaMode(true)
+	do State.toggleArenaMode()
 	=> advance
 - Start again => start
 - End the conversation 
@@ -24,8 +24,7 @@ do SignalBus.dialogueEnded.emit()
 => END
 
 ~ advance
-Nathan: Now listen here, don't you go through that dang daggone doggone portalroni right there or ya'll get yaself youghted ye wee raspscallion!
-Pyre: Couldn't give a sus matey.
-Pyre: Got the brick.
+Nathan: Now listen here, don't you go through that dang daggone doggone portal right there, it's dangerous!
+Pyre: what
 do SignalBus.dialogueEnded.emit()
 => END

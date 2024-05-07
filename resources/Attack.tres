@@ -5,6 +5,8 @@
 [resource]
 resource_name = "Attack"
 script = ExtResource("1_gm7va")
+source = NodePath("")
 attack_damage = 1.0
 knockback_force = 0.0
-canIgnite = false
+knockback_direction = Vector2(0, 0)
+statuses = []

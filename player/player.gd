@@ -6,6 +6,7 @@ class_name Player
 @onready var actionable_finder: Area2D = $Direction/ActionableFinder
 @onready var hitbox = $HitboxComponent
 @onready var health = $HealthComponent
+@onready var knockback = $KnockbackComponent
 @onready var dashFrames = $DashFrames
 @onready var dashCD = $DashCD
 @onready var focusTimer = $FocusTimer
@@ -16,11 +17,17 @@ class_name Player
 @export var direction = "Right"
 @export var embers = 1
 @export var weapons : Array[Weapon] = []
+@export var iFrameLength : float = 2.5
+@export var movement_override : bool = false
+
+signal movement_override_ended
 
 var isWalking = false
 var canDash = true
 var isDashing = false
 var isTalking = false
+var flashModulate = Color(1,1,1,0.6)
+var standardModulate = Color(1,1,1,1)
 
 func _ready():
 	if !SignalBus.is_connected("dialogueBegan",dialogueStart):
@@ -60,7 +67,7 @@ func handleInput():
 	if State.paused: return
 	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-		velocity = moveDirection*speed
+		if not movement_override: velocity = moveDirection*speed
 		
 
 func updateAnimation():
@@ -91,7 +98,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		if actionables.size() > 0:
 			actionables[0].action()
 			return
-	elif Input.is_action_just_pressed("dash") and isWalking == true and canDash == true:
+	elif Input.is_action_just_pressed("dash") and isWalking == true and canDash == true and not movement_override:
 		if isDashVariant == false:
 			baseDash()
 	elif Input.is_action_just_pressed("ember") and State.abilitiesAllowed == true:
@@ -146,6 +153,7 @@ func teleportTo(new_position):
 
 func _physics_process(_delta):
 	handleInput()
+	velocity += knockback.knockback_vector
 	move_and_slide()
 	updateAnimation()
 	
@@ -171,3 +179,21 @@ func consolidateEmber(caster,ability,target,isEmber):
 
 func death():
 	print("man im dead")
+
+func _on_health_component_damaged():
+	hitbox.makeImmune(true,iFrameLength)
+
+func _on_hitbox_component_immune_changed(is_immune):
+	if is_immune:
+		modulate = flashModulate
+	else:
+		modulate = standardModulate
+
+func relink_components():
+	hitbox = $HitboxComponent
+	health = $HealthComponent
+	knockback = $KnockbackComponent
+	hitbox.health_component = health
+	hitbox.knockback_component = knockback
+	health.heart = self
+	knockback.parent = self

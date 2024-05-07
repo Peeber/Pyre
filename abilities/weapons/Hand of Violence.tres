@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Weapon" load_steps=2 format=3 uid="uid://58jx4q876mxu"]
+
+[ext_resource type="Script" path="res://resources/Weapon.gd" id="1_1ya5m"]
+
+[resource]
+script = ExtResource("1_1ya5m")
+name = "Hand of Violence"
+folder_path = "res://abilities/resources/Hand of Violence/"
