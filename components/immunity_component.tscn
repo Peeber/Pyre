@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ccbie2nke65rj"]
+
+[ext_resource type="Script" path="res://components/ImmunityComponent.gd" id="1_tw0uv"]
+
+[node name="ImmunityComponent" type="Node"]
+script = ExtResource("1_tw0uv")

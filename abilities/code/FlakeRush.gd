@@ -1,7 +1,7 @@
 extends ContactDamage
 
 var damage : float = 20.0
-var force : float = 15.0
+var force : float = 400.0
 var interrupted = false
 var is_ai : bool = false
 var dash_length = 1.5
@@ -34,7 +34,7 @@ func _on_area_entered(area):
 	first_hit.emit()
 
 func build_attack():
-	var standard_attack = load("res://resources/Attack.tres")
+	var standard_attack = Attack.new()
 	standard_attack.attack_damage = damage
 	standard_attack.source = caster.get_path()
 	standard_attack.knockback_force = force
@@ -69,7 +69,8 @@ func chain_dash():
 	interrupted = false
 	original_speed = caster.speed
 	if !is_ai:
-		caster.movement_override = true
+		if "movement_override" in caster:
+			caster.movement_override = true
 	print("starting chain dash loop")
 	for x in 3:
 		print("dash ",x)
@@ -85,7 +86,6 @@ func dash():
 	if is_ai:
 		caster.switch_move_mode("seek")
 	print("starting dash")
-	print(attack.attack_damage)
 	await get_tree().create_timer(dash_length).timeout
 	print("dash over")
 	if is_ai:
@@ -98,5 +98,6 @@ func end():
 		caster.action_ended.emit()
 	disable()
 	caster.speed = original_speed
-	caster.movement_override = false
+	if "movement_override" in caster:
+		caster.movement_override = false
 	queue_free()

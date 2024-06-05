@@ -1,0 +1,44 @@
+~ start
+do SignalBus.dialogueBegan.emit()
+???: You.
+- Me?
+	=> challenge
+- (Hope, what is this thing?)
+	Hope: (That's a Flake. Complete cannon fodder, honestly. They're grunts in the defense of Apathy. Dumb as bricks.)
+	Pyre: (I see. This should be easy, then.)
+	Pyre: What do you want?
+	=> challenge
+- Why are there so many rocks here?
+	Flake: Rock farm.
+	Pyre: What?
+	Flake: Rock farm.
+	Hope: (Reminds me of those pet rocks you had as a kid.)
+	Pyre: (You can read my memories???)
+	Hope: (No, you mentioned it at one point.)
+	Pyre: (Whatever.)
+	=> challenge
+- ...
+	=> challenge
+=> END
+
+~ challenge
+
+Flake: I am Flake. You seek challenge of Apathy?
+- On second thought, I'll just turn back.
+	Hope: (What are you doing???)
+	Flake: Out.
+	do Physics.throw(State.currentPlayer,Vector2(0,-1),500)
+	do SignalBus.dialogueEnded.emit()
+	=> END
+- Sure.
+	Flake: Fool. Fool break good.
+- Just get out of my way already.
+	Flake: Mean one. I like breaking mean ones.
+Flake: Apathy is best. Apathy took many many evolutions. Apathy shield mind.
+Pyre: The lack of emotion in your voice really kills the impact of your praise.
+Flake: Silence. Shatter for Apathy.
+do SignalBus.dialogueEnded.emit()
+do State.toggleArenaMode()
+do State.latest_actionable_target.get_parent().get_node("Door").lock()
+do State.latest_actionable_target.build(2)
+=> END

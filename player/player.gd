@@ -7,10 +7,16 @@ class_name Player
 @onready var hitbox = $HitboxComponent
 @onready var health = $HealthComponent
 @onready var knockback = $KnockbackComponent
+@onready var status = $StatusComponent
+@onready var immunity = $ImmunityComponent
 @onready var dashFrames = $DashFrames
 @onready var dashCD = $DashCD
 @onready var focusTimer = $FocusTimer
-@export var speed: int = 75
+@export var base_speed: int = 75 :
+	set(value): 
+		base_speed = value
+		speed_changed.emit();
+@export var speed = 0
 @export var isDashVariant: bool = false
 @export var focus = 0
 @export var focusTick: float = (5/3.0)
@@ -21,6 +27,8 @@ class_name Player
 @export var movement_override : bool = false
 
 signal movement_override_ended
+signal speed_changed
+signal components_relinked
 
 var isWalking = false
 var canDash = true
@@ -43,7 +51,10 @@ func _ready():
 		SignalBus.abilityCast.connect(consolidateEmber)
 	if !health.is_connected("heartKilled",death):
 		health.heartKilled.connect(death)
+	if !is_connected("speed_changed",calculate_speed):
+		speed_changed.connect(calculate_speed)
 	State.currentPlayer = self
+	speed = base_speed
 
 func addWeapon(weapon : String):
 	var new_weapon = load("res://abilities/weapons/" + weapon + ".tres")
@@ -104,15 +115,15 @@ func _unhandled_input(_event: InputEvent) -> void:
 			baseDash()
 	elif Input.is_action_just_pressed("ember") and State.abilitiesAllowed == true:
 		activateAbility()
-	elif Input.is_action_just_pressed("dev_flake_summon"):
-		devFlakeSpawn()
-
-func devFlakeSpawn():
-	print("spawning Flake")
-	var flake = EnemyHandler.spawn("flake",position + Vector2(0,-50))
-	print(flake)
-	flake.build()
-	print("flake built through dev spawn")
+	#elif Input.is_action_just_pressed("dev_flake_summon"):
+		#devFlakeSpawn()
+#
+#func devFlakeSpawn():
+	#print("spawning Flake")
+	#var flake = EnemyHandler.spawn("flake",position + Vector2(0,-50))
+	#print(flake)
+	#flake.build()
+	#print("flake built through dev spawn")
 	
 
 func activateAbility():
@@ -138,10 +149,13 @@ func baseDash():
 			canDash = false
 			isDashing = true
 			moving_velocity = moving_velocity * 2
-			hitbox.isImmune = true
+			var stored_knockback = knockback.knockback_vector
+			immunity.make_immune_to("damage", true)
+			immunity.make_immune_to("knockback",true)
 			dashFrames.start()
 			await dashFrames.timeout
-			hitbox.isImmune = false
+			immunity.make_immune_to("damage",false)
+			immunity.make_immune_to("knockback",false)
 			isDashing = false
 			dashCD.start()
 			await dashCD.timeout
@@ -149,7 +163,9 @@ func baseDash():
 
 func dialogueStart():
 	isTalking = true
-	velocity = velocity * 0
+	velocity = Vector2.ZERO
+	Physics.halt(self)
+	move_and_slide()
 	updateAnimation()
 	
 
@@ -164,7 +180,9 @@ func teleportTo(new_position):
 
 func _physics_process(_delta):
 	handleInput()
-	velocity = moving_velocity + knockback.knockback_vector
+	velocity = moving_velocity
+	if not immunity.is_immune_to("knockback"):
+		velocity += knockback.knockback_vector
 	move_and_slide()
 	updateAnimation()
 	
@@ -191,20 +209,37 @@ func consolidateEmber(caster,ability,target,isEmber = false):
 func death():
 	print("man im dead")
 
-func _on_health_component_damaged():
-	hitbox.makeImmune(true,iFrameLength)
+func _on_hitbox_component_damaging_hit():
+	immunity.make_immune_to("damage",true,iFrameLength)
 
-func _on_hitbox_component_immune_changed(is_immune):
+func _on_immunity_component_immune_changed(immunity_type,is_immune):
+	if immunity_type != "damage":
+		return
 	if is_immune:
 		modulate = flashModulate
 	else:
 		modulate = standardModulate
 
 func relink_components():
-	hitbox = $HitboxComponent
-	health = $HealthComponent
-	knockback = $KnockbackComponent
-	hitbox.health_component = health
-	hitbox.knockback_component = knockback
-	health.heart = self
-	knockback.heart = self
+	Globals.auto_link_components(self)
+	hitbox = Globals.find_by_type(self,HitboxComponent)
+	health = Globals.find_by_type(self,HealthComponent)
+	knockback = Globals.find_by_type(self,KnockbackComponent)
+	status = Globals.find_by_type(self,StatusComponent)
+	immunity = Globals.find_by_type(self,ImmunityComponent)
+	components_relinked.emit()
+
+func calculate_speed():
+	var slowdown_amount = 0
+	if not status or not is_instance_valid(status):
+		await components_relinked
+	if status and is_instance_valid(status):
+		for x in status.active_statuses.values():
+			if "slowdown" in x:
+				slowdown_amount -= x.slowdown
+	
+	speed = base_speed + slowdown_amount
+
+
+func _on_health_component_damaged(damage):
+	SignalBus.healthChanged.emit(self,health.current_health,false)

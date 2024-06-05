@@ -1,4 +1,4 @@
-extends Node2D
+extends Node
 class_name KnockbackComponent
 
 @export var heart : PhysicsBody2D
@@ -9,10 +9,20 @@ func _ready():
 		heart = get_parent()
 
 func knockback(source,force,direction : Vector2):
-	if not source: return
+	if not heart:
+		heart = get_parent()
+	if force == 0.0:
+		return
 	if not direction or direction == Vector2.ZERO:
-		var source_position = get_node(source).position
-		var assumed_direction = source_position - heart.position
-		Physics.throw(heart,assumed_direction,force)
+		if not source: return
+		if "position" in get_node(source):
+			var source_position = get_node(source).position
+			var assumed_direction = source_position - heart.position
+			Physics.throw(heart,assumed_direction,force)
+		else:
+			if not source:
+				print("where did the source of this knockback go??? target was " + heart.name)
+				return
+			print("source " + get_node(source).name + " does not have a position and so " + heart.name + " cannot be knocked back")
 	else:
 		Physics.throw(heart,direction,force)

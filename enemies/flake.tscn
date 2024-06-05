@@ -1,40 +1,55 @@
-[gd_scene load_steps=8 format=3 uid="uid://bl75lk8l54ie"]
+[gd_scene load_steps=11 format=3 uid="uid://bl75lk8l54ie"]
 
 [ext_resource type="Script" path="res://enemies/flake.gd" id="1_rcx6r"]
 [ext_resource type="Resource" uid="uid://cb7pbux5i3s44" path="res://abilities/weapons/Heart of Desire.tres" id="2_5ixhn"]
 [ext_resource type="PackedScene" uid="uid://bkj3ad11d613f" path="res://components/health_component.tscn" id="2_42nc1"]
 [ext_resource type="Resource" uid="uid://p3wa8c6i2fnv" path="res://abilities/resources/Heart of Desire/Flake Rush.tres" id="2_a5t0i"]
 [ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="3_0lay5"]
+[ext_resource type="Resource" uid="uid://dpyg4tynsx2cp" path="res://abilities/resources/Heart of Desire/Flake Homing Rush.tres" id="3_vnocc"]
 [ext_resource type="PackedScene" uid="uid://0td010ypag0w" path="res://components/knockback_component.tscn" id="4_b4nuu"]
+[ext_resource type="PackedScene" uid="uid://ccbie2nke65rj" path="res://components/immunity_component.tscn" id="5_rii1j"]
+[ext_resource type="PackedScene" uid="uid://duraiq0ffrwc0" path="res://components/status_component.tscn" id="9_yy3au"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_xbg1g"]
 radius = 65.0692
 
 [node name="Flake" type="CharacterBody2D" node_paths=PackedStringArray("hitbox", "hp", "knockback", "navigation_agent")]
+process_mode = 1
 script = ExtResource("1_rcx6r")
 hitbox = NodePath("HitboxComponent")
 hp = NodePath("HealthComponent")
 knockback = NodePath("KnockbackComponent")
 navigation_agent = NodePath("NavigationAgent2D")
-speed = 300
-move_list = Array[Resource("res://resources/ability.gd")]([ExtResource("2_a5t0i")])
+base_speed = 400
+move_list = Array[Resource("res://resources/ability.gd")]([ExtResource("2_a5t0i"), ExtResource("3_vnocc")])
 weapon_list = Array[Resource("res://resources/Weapon.gd")]([ExtResource("2_5ixhn")])
 
+[node name="ImmunityComponent" parent="." instance=ExtResource("5_rii1j")]
+
 [node name="HealthComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("2_42nc1")]
-MAX_HEALTH = 400.0
-current_Health = 400.0
+MAX_HEALTH = 450.0
+current_health = 450.0
 heart = NodePath("..")
 
-[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component", "knockback_component") instance=ExtResource("3_0lay5")]
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component", "knockback_component", "status_component", "immunity_component", "area") instance=ExtResource("3_0lay5")]
 health_component = NodePath("../HealthComponent")
 knockback_component = NodePath("../KnockbackComponent")
+status_component = NodePath("../StatusComponent")
+immunity_component = NodePath("../ImmunityComponent")
+area = NodePath("CollisionShape2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
 shape = SubResource("CircleShape2D_xbg1g")
 
-[node name="KnockbackComponent" parent="." instance=ExtResource("4_b4nuu")]
+[node name="KnockbackComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("4_b4nuu")]
+heart = NodePath("..")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 avoidance_enabled = true
+
+[node name="StatusComponent" parent="." node_paths=PackedStringArray("heart", "hp", "immunity") instance=ExtResource("9_yy3au")]
+heart = NodePath("..")
+hp = NodePath("../HealthComponent")
+immunity = NodePath("../ImmunityComponent")
 
 [connection signal="built" from="." to="." method="_on_built"]

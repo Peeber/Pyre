@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bn0o347rcn826"]
+
+[ext_resource type="Script" path="res://abilities/code/FlakeHomingRush.gd" id="1_1djsk"]
+
+[node name="Flake Homing Rush" type="Area2D"]
+process_mode = 1
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_1djsk")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

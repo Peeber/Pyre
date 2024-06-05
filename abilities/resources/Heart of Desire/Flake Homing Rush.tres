@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=4 format=3 uid="uid://dpyg4tynsx2cp"]
+
+[ext_resource type="Resource" uid="uid://cb7pbux5i3s44" path="res://abilities/weapons/Heart of Desire.tres" id="1_6m5yh"]
+[ext_resource type="PackedScene" uid="uid://bn0o347rcn826" path="res://abilities/code/flake_homing_rush.tscn" id="2_tf4oo"]
+[ext_resource type="Script" path="res://resources/ability.gd" id="3_ve3w0"]
+
+[resource]
+script = ExtResource("3_ve3w0")
+ability_name = "Flake Homing Rush"
+description = "A homing charge at the target that cannot be sidestepped. Stuns the user briefly on impact."
+aim_type = "Reticle"
+cost = 100
+scene = ExtResource("2_tf4oo")
+allowed_weapons = Array[Resource("res://resources/Weapon.gd")]([ExtResource("1_6m5yh")])
+is_parented = true

@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsxxp40ahlufr"]
+
+[ext_resource type="Script" path="res://scenes/Destructible.gd" id="1_yi8o0"]
+[ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="2_rm8t2"]
+[ext_resource type="PackedScene" uid="uid://bkj3ad11d613f" path="res://components/health_component.tscn" id="3_5p1jj"]
+
+[node name="Destructible" type="StaticBody2D"]
+script = ExtResource("1_yi8o0")
+
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("2_rm8t2")]
+health_component = NodePath("../HealthComponent")
+
+[node name="HealthComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("3_5p1jj")]
+current_health = 100.0
+heart = NodePath("..")
+
+[connection signal="heartKilled" from="HealthComponent" to="." method="_on_health_component_heart_killed"]
