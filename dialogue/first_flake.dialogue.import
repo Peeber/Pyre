@@ -1,0 +1,15 @@
+[remap]
+
+importer="dialogue_manager_compiler_11"
+type="Resource"
+uid="uid://c6xj7iti6dtm4"
+path="res://.godot/imported/first_flake.dialogue-e4a1afd7c689c617700eaa9fcebc374c.tres"
+
+[deps]
+
+source_file="res://dialogue/first_flake.dialogue"
+dest_files=["res://.godot/imported/first_flake.dialogue-e4a1afd7c689c617700eaa9fcebc374c.tres"]
+
+[params]
+
+defaults=true

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://crly1h8kgkase"]
+
+[ext_resource type="Script" path="res://scenes/DataTimer.gd" id="1_paqmd"]
+
+[node name="DataTimer" type="Timer"]
+script = ExtResource("1_paqmd")
+
+[connection signal="timeout" from="." to="." method="_on_timeout"]

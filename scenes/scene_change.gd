@@ -14,6 +14,7 @@ func _ready():
 		SignalBus.sceneChanged.connect(changeScene)
 	#gives the player abilities for testing
 	State.currentPlayer.addWeapon("Ember of Hope")
+	State.currentPlayer.addWeapon("Heart of Desire")
 	SignalBus.addedAbility.emit("Consolidate Ember","Ember of Hope")
 	SignalBus.addedAbility.emit("Spark","Ember of Hope")
 	get_viewport().process_mode = Node.PROCESS_MODE_ALWAYS
@@ -86,3 +87,4 @@ func _on_animation_player_animation_finished(anim_name):
 			State.scene_changing = false
 			await get_tree().create_timer(0.5).timeout
 			old_camera.set_follow_target(State.currentPlayer)
+			State.currentPlayer.relink_components()

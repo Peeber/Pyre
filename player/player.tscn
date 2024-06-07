@@ -1,10 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://7amcl7lnewu6"]
+[gd_scene load_steps=14 format=3 uid="uid://7amcl7lnewu6"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_gge78"]
 [ext_resource type="PackedScene" uid="uid://bkj3ad11d613f" path="res://components/health_component.tscn" id="3_pv2sa"]
 [ext_resource type="PackedScene" uid="uid://dmy0jgckwcdf" path="res://components/hitbox_component.tscn" id="4_5li15"]
 [ext_resource type="Texture2D" uid="uid://hy6jbqkw4lgd" path="res://art/Player/Pyre.png" id="4_twik1"]
 [ext_resource type="PackedScene" uid="uid://0td010ypag0w" path="res://components/knockback_component.tscn" id="5_7obxx"]
+[ext_resource type="PackedScene" uid="uid://duraiq0ffrwc0" path="res://components/status_component.tscn" id="6_0t8at"]
+[ext_resource type="PackedScene" uid="uid://ccbie2nke65rj" path="res://components/immunity_component.tscn" id="7_n0c7c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cmveg"]
 size = Vector2(14, 7.6)
@@ -758,10 +760,10 @@ texture_filter = 1
 collision_layer = 16
 collision_mask = 9
 script = ExtResource("1_gge78")
+base_speed = 400
 
-[node name="HealthComponent" parent="." instance=ExtResource("3_pv2sa")]
-MAX_HEALTH = 100.0
-current_Health = 10.0
+[node name="HealthComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("3_pv2sa")]
+heart = NodePath("..")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 30)
@@ -946,17 +948,30 @@ libraries = {
 "": SubResource("AnimationLibrary_1w032")
 }
 
-[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component", "knockback_component") instance=ExtResource("4_5li15")]
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component", "knockback_component", "status_component", "immunity_component", "area") instance=ExtResource("4_5li15")]
 health_component = NodePath("../HealthComponent")
 knockback_component = NodePath("../KnockbackComponent")
+status_component = NodePath("../StatusComponent")
+immunity_component = NodePath("../ImmunityComponent")
+area = NodePath("CollisionShape2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
 position = Vector2(3.15545e-29, -11)
 scale = Vector2(5, 5)
 shape = SubResource("CapsuleShape2D_w28qk")
 
-[node name="KnockbackComponent" parent="." instance=ExtResource("5_7obxx")]
+[node name="KnockbackComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("5_7obxx")]
+heart = NodePath("..")
 
+[node name="StatusComponent" parent="." node_paths=PackedStringArray("heart", "hp", "immunity") instance=ExtResource("6_0t8at")]
+heart = NodePath("..")
+hp = NodePath("../HealthComponent")
+immunity = NodePath("../ImmunityComponent")
+
+[node name="ImmunityComponent" parent="." instance=ExtResource("7_n0c7c")]
+
+[connection signal="speed_changed" from="." to="." method="calculate_speed"]
 [connection signal="damaged" from="HealthComponent" to="." method="_on_health_component_damaged"]
 [connection signal="timeout" from="FocusTimer" to="." method="_on_focus_timer_timeout"]
-[connection signal="immuneChanged" from="HitboxComponent" to="." method="_on_hitbox_component_immune_changed"]
+[connection signal="damaging_hit" from="HitboxComponent" to="." method="_on_hitbox_component_damaging_hit"]
+[connection signal="immune_changed" from="ImmunityComponent" to="." method="_on_immunity_component_immune_changed"]

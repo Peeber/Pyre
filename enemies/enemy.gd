@@ -10,6 +10,12 @@ class_name Enemy
 @export var knockback : KnockbackComponent :
 	get: return knockback;
 	set(value): knockback = value;
+@export var immunity : ImmunityComponent :
+	get: return immunity;
+	set(value): immunity = value;
+@export var status : StatusComponent :
+	get: return status;
+	set(value): status = value;
 @export var death_function : Callable :
 	get: return death_function;
 	set(value) : death_function = value;
@@ -31,9 +37,15 @@ class_name Enemy
 @export var move_mode : String = "stationary" :
 	get: return move_mode;
 	set(value): move_mode = value;
+@export var base_speed : int :
+	get: return base_speed;
+	set(value):
+		base_speed = value
+		speed_changed.emit();
 @export var speed : int :
 	get: return speed;
-	set(value): speed = value;
+	set(value):
+		speed = value;
 @export var move_target : Node2D :
 	get: return move_target;
 	set(value): move_target = value;
@@ -73,16 +85,23 @@ class_name Enemy
 	set(value): mulligan = value;
 @export var movement_override : bool = false :
 	get: return movement_override;
-	set(value): movement_override = value;
+	set(value):
+		if movement_override != value and value == false:
+			movement_override_ended.emit()
+		movement_override = value;
 @export var stunned : bool = false :
 	get: return stunned;
 @export var current_velocity : Vector2 :
 	get: return current_velocity;
 	set(value): current_velocity = value
+@export var prebuild_vulnerabilities : Array = []:
+	get: return prebuild_vulnerabilities;
+	set(value): prebuild_vulnerabilities = value;
 
 var rand = RandomNumberGenerator.new()
-var pathfinding = false
+var pathfinding: bool = false
 var is_swapping_move_mode : bool = false
+var awaiting_speed : bool = false
 
 signal movement_override_ended
 signal swapped_move_mode
@@ -94,14 +113,20 @@ signal built
 signal stun_ended
 signal action_ended
 signal move_mode_swap_debounce_ended
+signal speed_changed
 
 var death_mode = func():
+	pathfinding = false
+	
 	print(name + "has died")
 	if death_function:
-		death_function.call()
+		death_function.call_deferred()
 		await ready_to_free
 	if not mulligan:
-		EnemyHandler.remove(self)
+		act_timer.paused = true
+		move_timer.paused = true
+		pathfinding = false
+		EnemyHandler.call_deferred("remove",self)
 
 func _on_move_frequency_updated():
 	if move_timer:
@@ -112,10 +137,14 @@ func _on_aggression_updated():
 		act_timer.wait_time = 4 * (1 - aggression)
 
 func _on_navigation_agent_2d_velocity_computed(safe_velocity):
-	if navigation_agent.is_navigation_finished() == false:
-		if pathfinding and not movement_override:
-			if intelligence > 0:
-				velocity = safe_velocity.normalized() * speed
+	if stunned: velocity = Vector2.ZERO
+	else:
+		if navigation_agent.is_navigation_finished() == false:
+			if pathfinding and not movement_override:
+				if intelligence > 0:
+					velocity = safe_velocity.normalized() * speed
+	if knockback:
+		velocity += current_velocity + knockback.knockback_vector
 	move_and_slide()
 
 var seek_mode = func():
@@ -207,6 +236,7 @@ var random_combo_mode = func():
 			if stunned:
 				await stun_ended
 			activate_ability(ability)
+			await action_ended
 		act_debounce()
 	
 
@@ -223,10 +253,10 @@ func switch_move_mode(mode : String):
 	if !(mode_func is Callable) or not mode_func:
 		print("invalid move mode, aborting")
 		return
-	if stunned:
-		await stun_ended
+	#if stunned:
+	#	await stun_ended
 	move_mode = mode
-	mode_func.call()
+	mode_func.call_deferred()
 	if is_swapping_move_mode == true:
 		print("delaying move mode swap to " + mode)
 		await move_mode_swap_debounce_ended
@@ -252,7 +282,7 @@ func switch_act_mode(mode : String):
 	if stunned:
 		await stun_ended
 	act_mode = mode
-	mode_func.call()
+	mode_func.call_deferred()
 	swapped_attack_mode.emit()
 
 func death():
@@ -274,15 +304,14 @@ func act_debounce():
 	await act_timer.timeout
 	return true
 
-func check_burst():
+func check_burst(threshold_reached):
 	for x in burst_thresholds:
-		if hp.current_Health <= x:
+		if hp.current_health <= x:
 			if triggered_burst_thresholds.find(x) < 0:
 				triggered_burst_thresholds.append(x)
-				burst_function.call(x)
+				burst_function.call_deferred(x)
 
 func stun(duration : float):
-	current_velocity = velocity
 	pathfinding = false
 	velocity = Vector2.ZERO
 	act_timer.paused = true
@@ -296,7 +325,25 @@ func stun(duration : float):
 	pathfinding = true
 	stun_ended.emit()
 
-func build():
+var prebuild_immunities = [
+	"damage",
+	"knockback",
+	"burn"
+]
+
+func _ready():
+	if not hitbox:
+		hitbox = Globals.find_by_type(self,HitboxComponent)
+	if hitbox:
+		if not prebuild_vulnerabilities or prebuild_vulnerabilities == []:
+			hitbox.monitorable = false
+		for x in prebuild_immunities:
+			if not x in prebuild_vulnerabilities:
+				hitbox.make_immune_to(x,true)
+
+func build(delay : float = 0):
+	if delay > 0:
+		await get_tree().create_timer(delay).timeout
 	if not hitbox:
 		hitbox = Globals.find_by_type(self,HitboxComponent)
 	if not hp:
@@ -305,9 +352,15 @@ func build():
 		knockback = Globals.find_by_type(self,KnockbackComponent)
 	if not navigation_agent:
 		navigation_agent = Globals.find_by_type(self,NavigationAgent2D)
+	if not status:
+		status = Globals.find_by_type(self,StatusComponent)
+	if not immunity:
+		Globals.find_by_type(self,StatusComponent)
 	navigation_agent.avoidance_enabled = true
 	if not hp or not hitbox:
 		print(name + "in scene " + get_parent().get_parent().name + " has been created without the required components and will be invulnerable (and might crash the game)")
+	if hitbox.monitorable == false:
+		hitbox.monitorable = true
 	print("component searches complete on " + name)
 	attack_target = State.currentPlayer
 	hp.heartKilled.connect(death)
@@ -336,3 +389,5 @@ func build():
 	attack_target = State.currentPlayer
 	built.emit()
 	
+func calculate_speed():
+	speed = base_speed

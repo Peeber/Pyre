@@ -147,10 +147,10 @@ libraries = {
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(960, 540)
 process_callback = 0
-limit_left = 0
-limit_top = 0
-limit_right = 2480
-limit_bottom = 1840
+limit_left = -80
+limit_top = -80
+limit_right = 2560
+limit_bottom = 1920
 position_smoothing_speed = 10.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]

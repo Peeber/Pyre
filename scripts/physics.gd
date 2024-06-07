@@ -1,23 +1,9 @@
 extends Node
 
 func throw(object,target,power,duration : float = 1):
+	if power == 0:
+		return
 	if object is CharacterBody2D:
-		#if object.has_signal("movement_override_ended"):
-			#
-			#object.velocity += (target.normalized() * power)
-			#object.move_and_slide()
-			#
-			#if duration and duration > 0:
-				#if object.movement_override != null:
-					#object.movement_override = true
-				#
-				#var timer = Timer.new()
-				#timer.one_shot = true
-				#timer.wait_time = duration
-				#timer.timeout.connect(func():
-					#halt(object)
-					#object.move_and_slide()
-				#)
 		print("throwing characterbody " + object.name)
 		var force_vector = Vector2.ZERO
 		force_vector = target.normalized() * power
@@ -42,11 +28,18 @@ func throw(object,target,power,duration : float = 1):
 		object.apply_central_impulse((target.normalized()) * power) #why is this so much easier
 
 func halt(object):
-	object.linear_velocity = Vector2.ZERO
-	if object.has_signal("movement_override_ended"):
-		object.movement_override_ended.emit()
-		object.movement_override = false
-		
+	if object is RigidBody2D:
+		object.linear_velocity = Vector2.ZERO
+		if object.has_signal("movement_override_ended"):
+			object.movement_override_ended.emit()
+			object.movement_override = false
+	elif object is CharacterBody2D:
+		object.velocity = Vector2.ZERO
+		object.move_and_slide()
+		if object.has_signal("movement_override_ended"):
+			object.movement_override_ended.emit()
+			object.movement_override = false
+
 func get_generalized_velocity(object):
 	var generalized_velocity : Vector2
 	if object is CharacterBody2D:

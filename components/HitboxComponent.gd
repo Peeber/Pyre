@@ -3,44 +3,33 @@ class_name HitboxComponent
 
 @export var health_component : HealthComponent
 @export var knockback_component : KnockbackComponent
-@export var isImmune : bool = false #immune to damage
-@export var isImmovable: bool = false #immune to knockback
-signal immuneChanged(is_immune : bool)
+@export var status_component : StatusComponent
+@export var immunity_component : ImmunityComponent
+@export var area: CollisionShape2D
+
 signal hit
 signal damaging_hit
 signal knocking_hit
 
-func damage(attack: Attack):
-	hit.emit()
-	if health_component and is_instance_valid(health_component) and not isImmune:
-		health_component.damage(attack)
-		damaging_hit.emit()
-	if knockback_component and is_instance_valid(knockback_component) and not isImmovable:
-		knockback_component.knockback(attack.source,attack.knockback_force,attack.knockback_direction)
-		knocking_hit.emit()
+func _ready():
+	if not area:
+		area = Globals.find_by_type(self,CollisionShape2D)
+	if not area:
+		print("WARNING: HitboxComponent inside " + get_parent().name + " does not have a shape and will not function")
 
-func makeImmune(is_immune,duration : float):
-	if isImmune == is_immune:
-		return
-	isImmune = is_immune
-	immuneChanged.emit(isImmune)
-	
-	if duration and duration >= 0:
-		var interrupted = false
-		immuneChanged.connect(func(_immune):
-			interrupted = true
-		)
-		
-		var timer = Timer.new()
-		add_child(timer)
-		timer.one_shot = true
-		timer.wait_time = duration
-		timer.start()
-		await timer.timeout
-		
-		if not interrupted:
-			isImmune = !isImmune
-			immuneChanged.emit(isImmune)
-		
-		timer.queue_free()
-		
+func damage(attack: Attack):
+	if not area:
+		area = Globals.find_by_type(self,CollisionShape2D)
+	hit.emit()
+	if health_component and is_instance_valid(health_component):
+		if not(immunity_component and is_instance_valid(immunity_component) and immunity_component.is_immune_to("damage")):
+			health_component.damage(attack.attack_damage)
+			damaging_hit.emit()
+	if knockback_component and is_instance_valid(knockback_component):
+		if not(immunity_component and is_instance_valid(immunity_component) and immunity_component.is_immune_to("knockback")):
+			if attack.knockback_force and attack.knockback_force != 0.0:
+				knockback_component.knockback(attack.source,attack.knockback_force,attack.knockback_direction)
+				knocking_hit.emit()
+	if status_component and is_instance_valid(status_component):
+		if attack.statuses and attack.statuses != []:
+			status_component.process_status_list(attack.statuses)

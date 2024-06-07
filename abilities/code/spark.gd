@@ -10,7 +10,8 @@ class_name Spark
 @export var is_moving = true
 signal ready_to_fire
 
-var attack = load("res://resources/Attack.tres")
+var attack = Attack.new()
+var burn = StatusEffect.new()
 var resource = load("res://abilities/resources/Ember of Hope/Spark.tres")
 var is_fired = false
 var ownedLasers = []
@@ -25,10 +26,11 @@ func _ready():
 
 func death():
 	for x in ownedLasers:
-		x.queue_free()
+		if is_instance_valid(x):
+			x.queue_free()
 	queue_free()
 
-#insures two lasers cant laser each other for double damage
+#insures two sparks cant laser each other for double damage
 func claimSpark(claimer):
 	if claimer is Spark:
 		laseredBy.append(claimer)
@@ -68,16 +70,26 @@ func _on_ready_to_fire():
 func setupAttack():
 	attack.source = caster.get_path()
 	attack.attack_damage = 5
-	attack.knockback_force = 500
-	var stat_array = []
-	stat_array.append({"Name" = "Burn", "Intensity" = 1, "Duration" = 10})
+	var stat_array : Array[StatusEffect] = []
+	setupBurn()
+	stat_array.append(burn)
 	attack.statuses = stat_array
+
+func setupBurn():
+	burn.sources.append(caster.get_path())
+	burn.sources.append(get_path())
+	burn.step_length = 1
+	burn.damage = 2.5
+	burn.duration = 10
+	burn.effect_name = "Burn"
+	burn.gfx_scene_path = "res://gfx/status_effects/burn_gfx.tscn"
+	
 
 func createBeam(beam_target):
 	print("creating beam to spark at ",beam_target.position)
 	var laser : LaserBeam = load("res://addons/BulletUpHell/BulletScene/LaserBeam.tscn").instantiate()
 	laser.set_collide_with(2)
-	laser.stay_duration = 999999999
+	laser.on_end = laser.END.Stay
 	beam_target.add_child(laser)
 	#i wish i could tell you why this works but i cant, very likely the function that builds the laser's ray uses global position
 	laser.global_position = beam_target.position

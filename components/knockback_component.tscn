@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" path="res://components/KnockbackComponent.gd" id="1_fnh0a"]
 
-[node name="KnockbackComponent" type="Node2D"]
+[node name="KnockbackComponent" type="Node"]
 script = ExtResource("1_fnh0a")

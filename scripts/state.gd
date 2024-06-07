@@ -12,6 +12,7 @@ var emberMax : int = 1
 var sparkMax : int = 3
 var sparks = []
 var scene_changing : bool = false
+var latest_actionable_target
 
 func toggleFocusPaused():
 	focusPaused = !focusPaused

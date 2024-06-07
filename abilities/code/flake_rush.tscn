@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://5divajq3poxi"]
+
+[ext_resource type="Script" path="res://abilities/code/FlakeRush.gd" id="1_hfktk"]
+
+[node name="Flake Rush" type="Area2D" node_paths=PackedStringArray("hit_cd")]
+process_mode = 1
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_hfktk")
+hit_cd = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="first_hit" from="." to="." method="_on_first_hit"]
