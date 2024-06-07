@@ -1,9 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://hmkgg4684p2i"]
+[gd_scene load_steps=12 format=3 uid="uid://hmkgg4684p2i"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="1_lcpo6"]
 [ext_resource type="Texture2D" uid="uid://cibr4lw2klii8" path="res://art/Tilesets/snow_tiles.png" id="2_7cwqg"]
 [ext_resource type="Texture2D" uid="uid://dweorc7u2fr8l" path="res://art/Tilesets/ice_tiles.png" id="3_ju25k"]
 [ext_resource type="PackedScene" uid="uid://crmdboi4oi8f5" path="res://scenes/door.tscn" id="4_dkuxr"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="4_dsye3"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_yuoe5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2odmn"]
@@ -904,11 +904,17 @@ sources/0 = SubResource("TileSetAtlasSource_2odmn")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l7n5h"]
 size = Vector2(64, 61)
 
-[sub_resource type="Resource" id="Resource_uc55g"]
+[sub_resource type="Resource" id="Resource_ldpy7"]
 script = ExtResource("6_yuoe5")
-duration = 0.0
+duration = 1.0
 transition = 0
 ease = 2
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_7shew"]
+vertices = PackedVector2Array(3613, 60, 3619, 2656, 62, 2656, 39, 49)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(29, 39, 3623, 51, 3629, 2666, 52, 2666)])
+source_geometry_group_name = &"navigation_polygon_source_group"
 
 [node name="test_world_2" type="Node2D"]
 process_mode = 1
@@ -943,19 +949,11 @@ position = Vector2(3, 234.5)
 
 [node name="PhantomCamera2D" type="Node2D" parent="."]
 position = Vector2(960, 540)
-script = ExtResource("1_lcpo6")
-priority_override = false
-priority = 0
-zoom = Vector2(1, 1)
+script = ExtResource("4_dsye3")
 follow_mode = 1
-follow_target = NodePath("")
-follow_parameters/damping = false
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = false
-limit/limit_node_target = NodePath("../TileMap")
-limit/margin = Vector4i(0, 0, 0, 0)
-limit/smoothed = false
-tween_parameters = SubResource("Resource_uc55g")
+tween_resource = SubResource("Resource_ldpy7")
 tween_on_load = false
-inactive_update_mode = 0
+limit_target = NodePath("../TileMap")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_7shew")

@@ -74,9 +74,15 @@ class_name Enemy
 @export var movement_override : bool = false :
 	get: return movement_override;
 	set(value): movement_override = value;
+@export var stunned : bool = false :
+	get: return stunned;
+@export var current_velocity : Vector2 :
+	get: return current_velocity;
+	set(value): current_velocity = value
 
 var rand = RandomNumberGenerator.new()
 var pathfinding = false
+var is_swapping_move_mode : bool = false
 
 signal movement_override_ended
 signal swapped_move_mode
@@ -84,6 +90,10 @@ signal swapped_attack_mode
 signal ready_to_free
 signal aggression_updated
 signal move_frequency_updated
+signal built
+signal stun_ended
+signal action_ended
+signal move_mode_swap_debounce_ended
 
 var death_mode = func():
 	print(name + "has died")
@@ -91,7 +101,7 @@ var death_mode = func():
 		death_function.call()
 		await ready_to_free
 	if not mulligan:
-		self.queue_free()
+		EnemyHandler.remove(self)
 
 func _on_move_frequency_updated():
 	if move_timer:
@@ -99,17 +109,14 @@ func _on_move_frequency_updated():
 
 func _on_aggression_updated():
 	if act_timer:
-		act_timer.wait_time = (1 - aggression)
+		act_timer.wait_time = 4 * (1 - aggression)
 
 func _on_navigation_agent_2d_velocity_computed(safe_velocity):
-	if pathfinding and not movement_override:
-		if velocity == Vector2.ZERO:
-			pathfinding = false
-			move_and_slide()
-			return
-		if intelligence > 0 and not movement_override:
-			velocity = safe_velocity.normalized() * speed
-		move_and_slide()
+	if navigation_agent.is_navigation_finished() == false:
+		if pathfinding and not movement_override:
+			if intelligence > 0:
+				velocity = safe_velocity.normalized() * speed
+	move_and_slide()
 
 var seek_mode = func():
 	if not pathfinding:
@@ -118,38 +125,56 @@ var seek_mode = func():
 	
 	if movement_override:
 		await movement_override_ended
-	navigation_agent.set_velocity((move_target.global_position - global_position).normalized() * speed)
+	if stunned:
+		await stun_ended
+	navigation_agent.target_position = move_target.global_position
 	
+	await get_tree().create_timer(0.1).timeout
 	swapped_move_mode.connect(func():
 		if movement_override:
 			await movement_override_ended
+		if stunned:
+			await stun_ended
 		navigation_agent.set_velocity(Vector2.ZERO)
-	)
+	,4) #4 is the oneshot flag so it disconnects after running
 
 var seek_homing_mode = func():
+	print("seek_homing activated")
 	if not pathfinding:
 		pathfinding = true
 	if not move_target: return
-	
+	print("homing checks passed")
 	var seek_timer = Timer.new()
+	seek_timer.name = "SeekTimer"
+	add_child(seek_timer)
 	seek_timer.one_shot = false
-	seek_timer.duration = (1.0 - aggression)
+	seek_timer.wait_time = (1.0 - aggression)
 	
 	seek_timer.timeout.connect(func():
-		if movement_override:
+		if movement_override or stunned:
 			return
-		navigation_agent.set_velocity((move_target.global_position - global_position).normalized() * speed)
+		navigation_agent.target_position = move_target.global_position
 	)
+	if not movement_override and not stunned:
+		navigation_agent.target_position = move_target.global_position
+	seek_timer.start()
 	
+	await get_tree().create_timer(0.1).timeout
 	swapped_move_mode.connect(func():
 		seek_timer.queue_free()
 		await movement_override_ended
 		navigation_agent.set_velocity(Vector2.ZERO)
-	)
+	,4)
 
-var stay_mode = func(duration : float):
+var stay_mode = func():
 	pathfinding = false
+	velocity = Vector2.ZERO
 	navigation_agent.set_velocity(Vector2.ZERO)
+
+func _physics_process(delta):
+	if navigation_agent.is_navigation_finished() == false and pathfinding:
+		velocity = (position.direction_to(navigation_agent.get_next_path_position())) * speed
+		navigation_agent.set_velocity(velocity)
 
 var move_modes = {
 	"death" = death_mode,
@@ -162,12 +187,16 @@ var random_attack_mode = func():
 	while act_mode == "random_attack":
 		rand.randomize()
 		var index = rand.randi_range(0,move_list.size()-1)
+		if stunned:
+			await stun_ended
 		activate_ability(move_list[index])
-		act_debounce
+		await action_ended
+		act_debounce()
 
 var random_combo_mode = func():
 	while act_mode == "random_combo":
 		if !combo_list or combo_list == []:
+			print(name + " tried to use random_combo mode but didn't have any combos")
 			switch_act_mode("random_attack")
 			return
 		rand.randomize()
@@ -175,6 +204,8 @@ var random_combo_mode = func():
 		var combo = combo_list[index]
 	
 		for ability in combo:
+			if stunned:
+				await stun_ended
 			activate_ability(ability)
 		act_debounce()
 	
@@ -186,23 +217,43 @@ var act_modes = {
 }
 
 func switch_move_mode(mode : String):
-	var mode_func : Callable = move_modes[mode]
-	if !(mode_func is Callable) or not mode_func :
+	if mode == move_mode:
+		return
+	var mode_func = move_modes[mode]
+	if !(mode_func is Callable) or not mode_func:
 		print("invalid move mode, aborting")
 		return
+	if stunned:
+		await stun_ended
 	move_mode = mode
 	mode_func.call()
+	if is_swapping_move_mode == true:
+		print("delaying move mode swap to " + mode)
+		await move_mode_swap_debounce_ended
+	swapped_move_mode.emit()
+	run_move_swap_debounce()
+
+func run_move_swap_debounce():
+	is_swapping_move_mode = true
+	await get_tree().create_timer(0.2).timeout
+	is_swapping_move_mode = false
+	move_mode_swap_debounce_ended.emit()
 
 func switch_act_mode(mode : String):
-	var mode_func : Callable = act_modes[mode]
+	if mode == act_mode:
+		return
+	var mode_func = act_modes[mode]
 	if mode == "none":
 		act_mode = "none"
 		return
 	elif !(mode_func is Callable) or not mode_func :
-		print("invalid move mode, aborting")
+		print("invalid act mode, aborting")
 		return
+	if stunned:
+		await stun_ended
 	act_mode = mode
 	mode_func.call()
+	swapped_attack_mode.emit()
 
 func death():
 	switch_act_mode("none")
@@ -211,7 +262,11 @@ func death():
 func activate_ability(ability : Ability):
 	if ability.scene:
 		var new_scene = ability.scene.instantiate()
-		self.get_parent().add_child(new_scene)
+		new_scene.caster = self
+		if ability.is_parented == true:
+			add_child(new_scene)
+		else:
+			get_parent().add_child(new_scene)
 	SignalBus.abilityCast.emit(self,ability,attack_target,false)
 
 func act_debounce():
@@ -226,38 +281,58 @@ func check_burst():
 				triggered_burst_thresholds.append(x)
 				burst_function.call(x)
 
+func stun(duration : float):
+	current_velocity = velocity
+	pathfinding = false
+	velocity = Vector2.ZERO
+	act_timer.paused = true
+	move_timer.paused = true
+	stunned = true
+	await get_tree().create_timer(duration).timeout
+	act_timer.paused = false
+	move_timer.paused = false
+	stunned = false
+	velocity = current_velocity
+	pathfinding = true
+	stun_ended.emit()
+
 func build():
 	if not hitbox:
-		for x in get_children():
-			if x is HitboxComponent:
-				hitbox = x
+		hitbox = Globals.find_by_type(self,HitboxComponent)
 	if not hp:
-		for x in get_children():
-			if x is HealthComponent:
-				hp = x
-				hp.damaged.connect(check_burst)
+		hp = Globals.find_by_type(self,HealthComponent)
 	if not knockback:
-		for x in get_children():
-			if x is KnockbackComponent:
-				knockback = x
+		knockback = Globals.find_by_type(self,KnockbackComponent)
 	if not navigation_agent:
-		for x in get_children():
-			if x is NavigationAgent2D:
-				navigation_agent = x
+		navigation_agent = Globals.find_by_type(self,NavigationAgent2D)
+	navigation_agent.avoidance_enabled = true
 	if not hp or not hitbox:
 		print(name + "in scene " + get_parent().get_parent().name + " has been created without the required components and will be invulnerable (and might crash the game)")
+	print("component searches complete on " + name)
 	attack_target = State.currentPlayer
 	hp.heartKilled.connect(death)
 	act_timer = Timer.new()
+	add_child(act_timer)
 	act_timer.one_shot = true
 	aggression_updated.emit()
 	move_timer = Timer.new()
+	add_child(move_timer)
 	move_timer.one_shot = true
 	move_timer.wait_time = move_frequency
-	if not navigation_agent.is_connected("velocity_computed",_on_navigation_agent_2d_velocity_computed):
+	print("timers built on " + name)
+	if !navigation_agent.is_connected("velocity_computed",_on_navigation_agent_2d_velocity_computed):
 		navigation_agent.velocity_computed.connect(_on_navigation_agent_2d_velocity_computed)
-	if not is_connected("aggression_updated",_on_aggression_updated):
+	if !is_connected("aggression_updated",_on_aggression_updated):
 		aggression_updated.connect(_on_aggression_updated)
-	if not is_connected("move_frequency_updated",_on_move_frequency_updated):
+	if !is_connected("move_frequency_updated",_on_move_frequency_updated):
 		move_frequency_updated.connect(_on_move_frequency_updated)
+	print("connections completed and assured")
+	if hp:
+		if !hp.is_connected("heartKilled",death):
+			hp.heartKilled.connect(death)
+		if !hp.is_connected("damaged",check_burst):
+			hp.damaged.connect(check_burst)
+	print("firing signal")
+	attack_target = State.currentPlayer
+	built.emit()
 	

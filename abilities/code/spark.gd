@@ -3,7 +3,8 @@ class_name Spark
 
 @onready var ThrowTime = $ThrowTime
 @onready var area = $Area2D
-@export var source : PhysicsBody2D
+@onready var hp = $HealthComponent
+@export var caster : PhysicsBody2D
 @export var target : Vector2
 @export var force = 250
 @export var is_moving = true
@@ -18,20 +19,27 @@ var laseredBy = []
 func _ready():
 	if !SignalBus.is_connected("abilityCast",abilityCast):
 		SignalBus.abilityCast.connect(abilityCast)
+	if !hp.is_connected("heartKilled",death):
+		hp.heartKilled.connect(death)
 	visible = false
+
+func death():
+	for x in ownedLasers:
+		x.queue_free()
+	queue_free()
 
 #insures two lasers cant laser each other for double damage
 func claimSpark(claimer):
 	if claimer is Spark:
 		laseredBy.append(claimer)
 
-func abilityCast(caster,ability : Ability, pos,_isEmber):
+func abilityCast(ability_caster,ability : Ability, pos,_isEmber):
 	if ability != resource or is_fired == true:
 		return
-	if caster is Player:
+	if ability_caster is Player:
 		State.sparkAdded(self)
-	position = caster.position
-	source = caster
+	position = ability_caster.position
+	caster = ability_caster
 	target = pos
 	ready_to_fire.emit()
 	
@@ -58,7 +66,7 @@ func _on_ready_to_fire():
 					createBeam(x)
 
 func setupAttack():
-	attack.source = source.get_path()
+	attack.source = caster.get_path()
 	attack.attack_damage = 5
 	attack.knockback_force = 500
 	var stat_array = []

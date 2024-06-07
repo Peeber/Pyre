@@ -28,6 +28,7 @@ var isDashing = false
 var isTalking = false
 var flashModulate = Color(1,1,1,0.6)
 var standardModulate = Color(1,1,1,1)
+var moving_velocity : Vector2 = Vector2.ZERO
 
 func _ready():
 	if !SignalBus.is_connected("dialogueBegan",dialogueStart):
@@ -67,7 +68,7 @@ func handleInput():
 	if State.paused: return
 	if isTalking == false and isDashing == false:
 		var moveDirection = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
-		if not movement_override: velocity = moveDirection*speed
+		if not movement_override: moving_velocity = moveDirection.normalized() * speed
 		
 
 func updateAnimation():
@@ -103,6 +104,16 @@ func _unhandled_input(_event: InputEvent) -> void:
 			baseDash()
 	elif Input.is_action_just_pressed("ember") and State.abilitiesAllowed == true:
 		activateAbility()
+	elif Input.is_action_just_pressed("dev_flake_summon"):
+		devFlakeSpawn()
+
+func devFlakeSpawn():
+	print("spawning Flake")
+	var flake = EnemyHandler.spawn("flake",position + Vector2(0,-50))
+	print(flake)
+	flake.build()
+	print("flake built through dev spawn")
+	
 
 func activateAbility():
 	if State.arenaMode and focus < 100:
@@ -126,7 +137,7 @@ func baseDash():
 	if isDashVariant == false:
 			canDash = false
 			isDashing = true
-			velocity = velocity * 2
+			moving_velocity = moving_velocity * 2
 			hitbox.isImmune = true
 			dashFrames.start()
 			await dashFrames.timeout
@@ -153,7 +164,7 @@ func teleportTo(new_position):
 
 func _physics_process(_delta):
 	handleInput()
-	velocity += knockback.knockback_vector
+	velocity = moving_velocity + knockback.knockback_vector
 	move_and_slide()
 	updateAnimation()
 	
@@ -167,7 +178,7 @@ func _on_focus_timer_timeout():
 		focus += focusTick
 	SignalBus.focusChanged.emit(focus)
 	
-func consolidateEmber(caster,ability,target,isEmber):
+func consolidateEmber(caster,ability,target,isEmber = false):
 	if ability.ability_name == "Consolidate Ember":
 		if target is Player:
 			if embers < State.emberMax:
@@ -196,4 +207,4 @@ func relink_components():
 	hitbox.health_component = health
 	hitbox.knockback_component = knockback
 	health.heart = self
-	knockback.parent = self
+	knockback.heart = self

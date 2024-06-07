@@ -3,12 +3,16 @@
 [ext_resource type="Script" path="res://abilities/code/ContactDamage.gd" id="1_x2jpe"]
 
 [node name="ContactDamage" type="Area2D" node_paths=PackedStringArray("hit_cd")]
+collision_layer = 0
+collision_mask = 2
 monitoring = false
 monitorable = false
 script = ExtResource("1_x2jpe")
 hit_cd = NodePath("Timer")
 
 [node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="area_exited" from="." to="." method="_on_area_exited"]

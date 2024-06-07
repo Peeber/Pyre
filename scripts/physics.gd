@@ -34,12 +34,9 @@ func throw(object,target,power,duration : float = 1):
 		
 		print("throwing " + object.name + " with force ",force_vector)
 		
-		var timer = Timer.new()
-		timer.one_shot = true
-		timer.wait_time = duration
-		timer.timeout.connect(func():
-			knockback.knockback_vector -= force_vector
-			timer.queue_free()
+		get_tree().create_timer(duration).timeout.connect(func():
+			if knockback:
+				knockback.knockback_vector -= force_vector
 		)
 	elif object is RigidBody2D:
 		object.apply_central_impulse((target.normalized()) * power) #why is this so much easier
@@ -49,3 +46,15 @@ func halt(object):
 	if object.has_signal("movement_override_ended"):
 		object.movement_override_ended.emit()
 		object.movement_override = false
+		
+func get_generalized_velocity(object):
+	var generalized_velocity : Vector2
+	if object is CharacterBody2D:
+		generalized_velocity = object.velocity
+	elif object is StaticBody2D:
+		generalized_velocity = object.constant_linear_velocity
+	elif object is RigidBody2D:
+		generalized_velocity = object.linear_velocity
+	else:
+		generalized_velocity = Vector2.ZERO
+	return generalized_velocity

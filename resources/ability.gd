@@ -8,3 +8,4 @@ class_name Ability
 @export var cost = 100
 @export var scene : PackedScene
 @export var allowed_weapons : Array[Weapon]
+@export var is_parented : bool = false
