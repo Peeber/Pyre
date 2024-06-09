@@ -27,8 +27,8 @@ weapon_list = Array[Resource("res://resources/Weapon.gd")]([ExtResource("2_5ixhn
 [node name="ImmunityComponent" parent="." instance=ExtResource("5_rii1j")]
 
 [node name="HealthComponent" parent="." node_paths=PackedStringArray("heart") instance=ExtResource("2_42nc1")]
-MAX_HEALTH = 450.0
-current_health = 450.0
+MAX_HEALTH = 300.0
+current_health = 300.0
 heart = NodePath("..")
 
 [node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component", "knockback_component", "status_component", "immunity_component", "area") instance=ExtResource("3_0lay5")]

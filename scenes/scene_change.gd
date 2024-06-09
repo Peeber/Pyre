@@ -4,6 +4,7 @@ var next_world : Node2D
 var old_camera : PhantomCamera2D
 var new_camera : PhantomCamera2D
 var tween_duration : float
+var debounce : bool = false
 
 @onready var current_world = $test_world
 @onready var anim = $AnimationPlayer
@@ -26,12 +27,15 @@ func get_current_world():
 	return current_world
 
 func changeScene(next_world_name: String):
+	if debounce:
+		return
+	debounce = true
 	State.scene_changing = true
 	print("changing scene from " + current_world.name + " to " + next_world_name)
+	anim.play("fade_in")
 	next_world = load("res://scenes/rooms/" + next_world_name + ".tscn").instantiate()
 	next_world.z_index = -1
 	call_deferred("add_child",next_world)
-	anim.play("fade_in")
 
 func _on_animation_player_animation_finished(anim_name):
 	old_camera = current_world.get_node("PhantomCamera2D")
@@ -45,7 +49,8 @@ func _on_animation_player_animation_finished(anim_name):
 			
 			#kidnap player
 			var tilemap : TileMap
-			var player : Player = State.currentPlayer.duplicate()
+			var player : Player = State.currentPlayer #.duplicate()
+			player.get_parent().remove_child(player)
 			var exit : Marker2D
 			for x in Globals.get_all_children(next_world):
 				if x is TileMap:
@@ -57,9 +62,9 @@ func _on_animation_player_animation_finished(anim_name):
 					if x.nextWorldName == current_world.name:
 						exit = x.exit
 						
-			print(player.get_parent())
-			print(State.currentPlayer.get_parent())
-			State.currentPlayer = player
+			#print(player.get_parent())
+			#print(State.currentPlayer.get_parent())
+			#State.currentPlayer = player
 			player.relink_components()
 			new_camera.set_follow_target(player)
 			print(new_camera.follow_target)
@@ -87,4 +92,5 @@ func _on_animation_player_animation_finished(anim_name):
 			State.scene_changing = false
 			await get_tree().create_timer(0.5).timeout
 			old_camera.set_follow_target(State.currentPlayer)
-			State.currentPlayer.relink_components()
+			#State.currentPlayer.relink_components()
+			debounce = false
